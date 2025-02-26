@@ -1,3 +1,0 @@
-# Bases de datos simotec
-
-
