@@ -1,0 +1,153 @@
+functions:
+  ########################################
+  # Usuarios
+  ########################################
+  getUsers:
+    handler: src/maintainers/users/handler.listUsers
+    events:
+      - httpApi:
+          path: /users
+          method: get
+  createUser:
+    handler: src/maintainers/users/handler.createUser
+    events:
+      - httpApi:
+          path: /users
+          method: post
+  updateUser:
+    handler: src/maintainers/users/handler.updateUser
+    events:
+      - httpApi:
+          path: /users/{id}
+          method: put
+  deleteUser:
+    handler: src/maintainers/users/handler.deleteUser
+    events:
+      - httpApi:
+          path: /users/{id}
+          method: delete
+  ########################################
+  # Compañías
+  ########################################
+  getCompanies:
+    handler: src/maintainers/companies/handler.listCompanies
+    events:
+      - httpApi:
+          path: /companies
+          method: get
+  createCompany:
+    handler: src/maintainers/companies/handler.createCompany
+    events:
+      - httpApi:
+          path: /companies
+          method: post
+  updateCompany:
+    handler: src/maintainers/companies/handler.editCompany
+    events:
+      - httpApi:
+          path: /companies/{id}
+          method: put
+  deleteCompany:
+    handler: src/maintainers/companies/handler.deleteCompany
+    events:
+      - httpApi:
+          path: /companies/{id}
+          method: delete
+  ########################################
+  # Auth
+  ########################################
+# POST /auth/login: Autenticar al usuario y generar tokens JWT.
+# POST /auth/refresh: Renovar el token de acceso utilizando el refresh token.
+# POST /auth/logout: Eliminar el refresh token y cerrar sesión.
+  login:
+    handler: src/maintainers/auth/handler.login
+    events:
+      - httpApi:
+          path: /auth/login
+          method: post
+  refresh:
+    handler: src/maintainers/auth/handler.refreshToken
+    events:
+      - httpApi:
+          path: /auth/refresh
+          method: post
+  logout:
+    handler: src/maintainers/auth/handler.logout
+    events:
+      - httpApi:
+          path: /auth/logout
+          method: post
+  ########################################
+  # Ciclos de Evaluación
+  ########################################
+  create-cicle:
+    handler: src/maintainers/cycles/handler.createEvaluationCycle
+    events:
+      - httpApi:
+          path: /cycles
+          method: post
+  get-cicles:
+    handler: src/maintainers/cycles/handler.listCycles
+    events:
+      - httpApi:
+          path: /cycles
+          method: get
+  get-cicle:
+    handler: src/maintainers/cycles/handler.getCycle
+    events:
+      - httpApi:
+          path: /cycles/{id}
+          method: get
+  update-cicle:
+    handler: src/maintainers/cycles/handler.updateCycle
+    events:
+      - httpApi:
+          path: /cycles/{id}
+          method: put
+  delete-cicle:
+    handler: src/maintainers/cycles/handler.deleteCycle
+    events:
+      - httpApi:
+          path: /cycles/{id}
+          method: delete
+  ########################################
+  #
+  ########################################
+  start-test:
+    handler: src/maintainers/users-tests/handler.startTest
+    events:
+      - httpApi:
+          path: /users-tests
+          method: post
+  save-test-progress:
+    handler: src/maintainers/users-tests/handler.saveTestProgress
+    events:
+      - httpApi:
+          path: /users-tests/{id}
+          method: put
+  get-test-progress:
+    handler: src/maintainers/users-tests/handler.getTestProgress
+    events:
+      - httpApi:
+          path: /users-tests/test-progress
+          method: post
+  confirm-test-completion:
+    handler: src/maintainers/users-tests/handler.confirmTestCompletion
+    events:
+      - httpApi:
+          path: /comfirm-test-completed
+          method: post
+  # get-test-progresses: ESTA PARA LOS ADMIN, QUEDA PENDIENTE O TODO: ⚠️⚠️
+
+  ########################################
+  #
+  ########################################
+
+  ########################################
+  #
+  ########################################
+
+  ########################################
+  #
+  ########################################
+
