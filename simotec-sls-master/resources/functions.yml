@@ -1,0 +1,64 @@
+functions:
+################################################
+# Obtener Preguntas y Enviar Respuestas
+################################################
+  get-questions:
+    handler: src/functions/tests/tests.getTestQuestions
+    events:
+      - httpApi:
+          path: /questions
+          method: get
+  submit-answers:
+    handler: src/functions/tests/tests.submitTestAnswers
+    events:
+      - httpApi:
+          path: /questions
+          method: post
+  begin-evcaluation:
+    handler: src/functions/tests/tests.startEvaluationCycle
+    events:
+      - httpApi:
+          path: /evaluation
+          method: post
+  login:
+    handler: src/functions/auth/auth.login
+    events:
+      - httpApi:
+          path: /login
+          method: post
+################################################
+# CAdmins
+################################################
+  create-cadmin:
+    handler: src/functions/admin/admins.createCAdmin
+    events:
+      - httpApi:
+          path: /cadmin
+          method: post
+  assign-test:
+    handler: src/functions/admin/admins.assignTestToUser
+    events:
+      - httpApi:
+          path: /cadmin/assign-test
+          method: post
+################################################
+# Usuarios
+################################################
+  register-user:
+    handler: src/functions/users/users.registerUser
+    events:
+      - httpApi:
+          path: /users
+          method: post
+  get-users:
+    handler: src/functions/users/users.getUsers
+    events:
+      - httpApi:
+          path: /users/{id}
+          method: get
+  get-pending-test:
+    handler: src/functions/users/users.getPendingTests
+    events:
+      - httpApi:
+          path: /users/{id}/pending-test
+          method: get
