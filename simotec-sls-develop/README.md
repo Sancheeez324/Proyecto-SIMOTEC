@@ -21,7 +21,7 @@ Instalar NodeJS
 ## PASOS
 ##  En una cmd abierta como administrador
 1) ejecutar el comanod npm install -g serverless
-2) Instalar aws cli
+2) Instalar aws cli https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 3) Ejecutar el comando aws configure 
 4) Ingresar las llaves de acceso (region es us-east-2 y formato json)
 
