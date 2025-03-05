@@ -19,9 +19,9 @@ function initializePool() {
       connectionLimit: 10,
       queueLimit: 0,
       // Configuración SSL
-      ssl: {
-        ca: caCert,
-      },
+      //ssl: {
+      //  ca: caCert,
+      //},
     });
   }
   return pool;

@@ -17,7 +17,17 @@ This template demonstrates how to make a simple HTTP API with Node.js running on
 This template does not include any kind of persistence (database). For more advanced examples, check out the [serverless/examples repository](https://github.com/serverless/examples/) which includes Typescript, Mongo, DynamoDB and other examples.
 
 ## Usage
+Instalar NodeJS
+## PASOS
+##  En una cmd abierta como administrador
+1) ejecutar el comanod npm install -g serverless
+2) Instalar aws cli
+3) Ejecutar el comando aws configure 
+4) Ingresar las llaves de acceso (region es us-east-2 y formato json)
 
+## En la cmd del proyecto
+1) ejecutar el comando npm install 
+2) ejecutar serverless deploy
 ### Deployment
 
 ```

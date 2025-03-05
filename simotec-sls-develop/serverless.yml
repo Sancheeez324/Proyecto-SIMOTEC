@@ -1,23 +1,36 @@
 service: simotec-sls
-frameworkVersion: "3"
+frameworkVersion: "4"
 
 custom:
-  customDomain:
-    domainName: ${env:AWS_DOMAIN_NAME}
-    basePath: ""
-    stage: ${self:provider.stage}
-    createRoute53Record: true
-    endpointType: regional
-    certificateArn: ${env:AWS_CERTIFICATE_ARN}
+  #customDomain:
+  #  domainName: ${env:AWS_DOMAIN_NAME}
+  #  basePath: ""
+  #  stage: ${self:provider.stage}
+  #  createRoute53Record: true
+  # endpointType: regional
+  #  certificateArn: ${env:AWS_CERTIFICATE_ARN}
+
+
 
 provider:
   name: aws
   runtime: nodejs20.x
-  stage: ${opt:stage}
-  region: us-east-1
+  timeout: 20
+  memorySize: 3000 
+  stage: ${opt:stage, 'dev'}
+  region: us-east-2
   tags:
     CLIENT: simotec
     STAGE: ${self:provider.stage}
+
+  #Revisar  
+  #vpc:
+  #  securityGroupIds:
+  #    sg-0f746fabac7069eb3
+  #  subnetIds:
+  #    subnet-02b7e739c70cb25e4,
+  #    subnet-0898275b12331b159,
+  #    subnet-06e6d01dc93ae602a
   httpApi:
     cors:
       allowedOrigins:
@@ -41,5 +54,10 @@ provider:
     JWT_SECRET: ${env:JWT_SECRET}
     JWT_EXPIRES_IN: ${env:JWT_EXPIRES_IN}
     CORS_ORIGIN: ${env:CORS_ORIGIN}
-
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "rds:DescribeDBInstances"
+        - "rds:Connect"
+      Resource: "*"
 functions: ${file(./resources/functions.yml):functions}
