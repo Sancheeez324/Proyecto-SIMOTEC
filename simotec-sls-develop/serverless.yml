@@ -26,11 +26,11 @@ provider:
   #Revisar  
   #vpc:
   #  securityGroupIds:
-  #    sg-0f746fabac7069eb3
+  #    - sg-0277c381fd928a03b   # Tu Security Group que permite acceso a RDS
   #  subnetIds:
-  #    subnet-02b7e739c70cb25e4,
-  #    subnet-0898275b12331b159,
-  #    subnet-06e6d01dc93ae602a
+  #    - subnet-02b7e739c70cb25e4
+  #    - subnet-0898275b12331b159
+  #    - subnet-06e6d01dc93ae602a
   httpApi:
     cors:
       allowedOrigins:
@@ -50,7 +50,7 @@ provider:
     DB_USER: ${env:DB_USER}
     DB_PASSWORD: ${env:DB_PASSWORD}
     DB_NAME: ${env:DB_NAME}
-    DB_SSL_CA: ${env:DB_SSL_CA}
+    #DB_SSL_CA: ${env:DB_SSL_CA}
     JWT_SECRET: ${env:JWT_SECRET}
     JWT_EXPIRES_IN: ${env:JWT_EXPIRES_IN}
     CORS_ORIGIN: ${env:CORS_ORIGIN}
