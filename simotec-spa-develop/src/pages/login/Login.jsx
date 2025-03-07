@@ -14,8 +14,9 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // const response = await axios.post("/api/login", { email, password, type });
-    const response = await sendRequest(
-      import.meta.env.VITE_API_URL + "/login",
+    console.log("API URL:", import.meta.env.VITE_API_URL);
+    const response = await sendRequest(    
+      import.meta.env.VITE_API_URL + "/auth/login",
       "POST",
       { email, password, type }
     );

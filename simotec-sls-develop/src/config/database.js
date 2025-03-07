@@ -9,10 +9,7 @@ function initializePool() {
     //const caCert = Buffer.from(process.env.DB_SSL_CA, 'base64').toString('utf8');
  
     console.log("Inicializando pool de conexiones...");
-    console.log("DB_HOST:", process.env.DB_HOST);
-    console.log("DB_USER:", process.env.DB_USER);
-    console.log("DB_PASSWORD", process.env.DB_PASSWORD);
-    console.log("DB_NAME",process.env.DB_NAME);
+
     pool = mysql.createPool({
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
