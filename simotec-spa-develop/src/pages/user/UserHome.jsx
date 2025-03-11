@@ -54,7 +54,7 @@ const UserHome = () => {
           </Button>
         </Col>
         <Col>
-          <h3>Confiuracion</h3>
+          <h3>Configuracion</h3>
           <p>Administrar mi cuenta</p>
           <Button variant="primary">Configuracion</Button>
         </Col>

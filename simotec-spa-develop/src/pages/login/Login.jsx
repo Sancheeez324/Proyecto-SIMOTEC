@@ -18,14 +18,16 @@ const Login = () => {
     const response = await sendRequest(    
       import.meta.env.VITE_API_URL + "/auth/login",
       "POST",
+      //console.log(email, password, type),
       { email, password, type }
     );
 
-    console.log("DEBUG: response", response);
+    console.log("Respuesta del backend:", response.data); 
 
     if (response.status === 200) {
-      login(response.data.token, response.data.user, response.data.type);
-      if (response.data.type === "admin") {
+      login(response.data.token, response.data.user, response.data.role);
+      console.log("Rol recibido:", response.data.role);
+      if (response.data.role === "admin") {
         navigate("/cadmin");
       } else {
         navigate("/userhome");
@@ -44,9 +46,9 @@ const Login = () => {
       style={{ height: "100vh" }}
     >
       <Card style={{ width: "20rem" }}>
-        <Card.Body>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="type">
+        <Card.Body>          
+          <Form onSubmit={handleSubmit}>            
+            {/*<Form.Group controlId="type">
               <Form.Label>Rol</Form.Label>
               <Form.Control
                 as="select"
@@ -56,7 +58,7 @@ const Login = () => {
                 <option value="user">Usuario</option>
                 <option value="admin">Administrador</option>
               </Form.Control>
-            </Form.Group>
+            </Form.Group>*/}
             <Form.Group controlId="email">
               <Form.Label>Email</Form.Label>
               <Form.Control

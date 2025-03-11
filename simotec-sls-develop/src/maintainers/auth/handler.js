@@ -38,16 +38,22 @@ module.exports.login = async (event) => {
         return generateResponse(401, { message: "Invalid email or password" });
       }
 
+      // Determinar el rol basado en `cadmin_id`
+      const role = user.cadmin_id ? "admin" : "user";  
+
       // Generar tokens
-      const accessToken = generateAccessToken(user);
-      await generateRefreshToken({ id: user.id, role: user.role }, connection);
+      const accessToken = generateAccessToken({ id: user.id, role });
+      await generateRefreshToken({ id: user.id, role }, connection);
+
+      console.log("Usuario autenticado:", user);
+      console.log("Rol determinado:", role); // <-- Verificamos que se está enviando el rol correcto
 
       // Retornar tokens y rol del usuario
       return generateResponse(200, {
         accessToken,
-        role: user.role,
+        role, // Aseguramos que se envía correctamente
       });
-    });
+        });
   } catch (error) {
     console.error("Error logging in:", error);
     return generateResponse(500, { message: "Internal Server Error" });
