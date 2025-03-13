@@ -55,6 +55,8 @@ function App() {
               path="/cadmin/assign-tests"
               element={<ProtectedRoute element={<AssignTest />} />}
             />
+            {/* RUTAS PARA SUPERADMINS */}
+
           </Routes>
         </Suspense>
       </AuthProvider>

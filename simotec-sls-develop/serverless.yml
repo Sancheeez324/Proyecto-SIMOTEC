@@ -10,7 +10,8 @@ custom:
   # endpointType: regional
   #  certificateArn: ${env:AWS_CERTIFICATE_ARN}
 
-
+plugins:
+  - serverless-offline
 
 provider:
   name: aws
@@ -22,7 +23,7 @@ provider:
   tags:
     CLIENT: simotec
     STAGE: ${self:provider.stage}
-
+  
   #Revisar  
   #vpc:
   #  securityGroupIds:

@@ -1,4 +1,6 @@
 functions:
+
+  
   ########################################
   # Usuarios
   ########################################
@@ -59,11 +61,18 @@ functions:
 # POST /auth/login: Autenticar al usuario y generar tokens JWT.
 # POST /auth/refresh: Renovar el token de acceso utilizando el refresh token.
 # POST /auth/logout: Eliminar el refresh token y cerrar sesión.
-  login:
-    handler: src/maintainers/auth/handler.login
+  loginUser:
+    handler: src/maintainers/auth/userhandler.login
     events:
-      - httpApi:
-          path: /auth/login
+      - http:
+          path: auth/user/login
+          method: post
+
+  loginCadmin:
+    handler: src/maintainers/auth/cadminHandler.login
+    events:
+      - http:
+          path: auth/cadmin/login
           method: post
   refresh:
     handler: src/maintainers/auth/handler.refreshToken
