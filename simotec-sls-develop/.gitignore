@@ -1,3 +1,5 @@
 .env
 node_modules
 respaldo.js
+compararContrasena.js
+encriptacion.js
