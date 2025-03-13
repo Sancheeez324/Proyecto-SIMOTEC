@@ -1,6 +1,4 @@
-functions:
-
-  
+functions:  
   ########################################
   # Usuarios
   ########################################
@@ -28,6 +26,35 @@ functions:
       - httpApi:
           path: /users/{id}
           method: delete
+  ########################################
+  # Cadmins
+  ########################################
+  getCadmins:
+    handler: src/maintainers/cadmins/handler.listCadmins
+    events:
+      - httpApi:
+          path: /cadmins
+          method: get
+  createCadmin:
+    handler: src/maintainers/cadmins/handler.createCadmin
+    events:
+      - httpApi:
+          path: /cadmins
+          method: post
+  updateCadmin:
+    handler: src/maintainers/cadmins/handler.updateCadmin
+    events:
+      - httpApi:
+          path: /cadmins/{id}
+          method: put
+  deleteCadmin:
+    handler: src/maintainers/cadmins/handler.deleteCadmin
+    events:
+      - httpApi:
+          path: /cadmins/{id}
+          method: delete
+
+  
   ########################################
   # Compañías
   ########################################
@@ -159,4 +186,3 @@ functions:
   ########################################
   #
   ########################################
-
