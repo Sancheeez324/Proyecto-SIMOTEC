@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 
-const storedHash = "$2a$10$xfUCO5UXmnGC5nrm25boheekJHOA8TNDKkfO60YIHMlAAxWq3y4OW"; // Copia el hash real de la BD
-const inputPassword = "clave4567"; // La contraseña original
+const storedHash = "$2a$10$xXPQKaJAdZjFQGMsvJEd2ubor9xlIwaa8N.dkYMM/8DiXmeoDfmGi"; // Copia el hash real de la BD
+const inputPassword = "UserPass789!"; // La contraseña original
 
 bcrypt.compare(inputPassword, storedHash)
   .then(result => console.log("¿Coincide la contraseña?", result))

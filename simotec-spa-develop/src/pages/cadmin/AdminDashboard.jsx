@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 const AdminDashboard = () => {
   return (
     <div className="container mt-5">
-      <h1 className="mb-4">Dashboard del Administrador</h1>
+      <h1 className="mb-4">Dashboard empresa</h1>
       <Row className="mb-4">
         <Col md={4}>
           <Card>

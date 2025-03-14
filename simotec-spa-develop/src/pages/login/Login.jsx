@@ -8,29 +8,31 @@ const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [type, setType] = useState("user");
+  const [role, setRole] = useState("cadmin"); // Estado para manejar el rol
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // const response = await axios.post("/api/login", { email, password, type });
     console.log("API URL:", import.meta.env.VITE_API_URL);
-    const response = await sendRequest(    
+
+    // Envía la solicitud con el rol actual
+    const response = await sendRequest(
       import.meta.env.VITE_API_URL + "/auth/login",
       "POST",
-      //console.log(email, password, type),
-      { email, password, type }
+      { email, password, role } // Usa el estado `role`
     );
 
-    console.log("Respuesta del backend:", response.data); 
+    console.log("Respuesta del backend:", response.data);
 
     if (response.status === 200) {
       login(response.data.token, response.data.user, response.data.role);
       console.log("Rol recibido:", response.data.role);
-      if (response.data.role === "admin") {
-        navigate("/cadmin");
-      } else {
-        navigate("/userhome");
+
+      // Redirige según el rol
+      if (role === "cadmin") {
+        navigate("/cadmin"); // Redirige a /cadmin para el rol "cadmin"
+      } else if (role === "user") {
+        navigate("/userhome"); // Redirige a /userhome para el rol "user"
       }
     } else if (response.status === 401) {
       alert("Usuario o contraseña incorrectos.");
@@ -39,50 +41,90 @@ const Login = () => {
     }
   };
 
-  // center form card
+  // Cambia el rol entre "cadmin" y "user" cuando se hace clic en el botón
+  const toggleRole = () => {
+    setRole((prevRole) => (prevRole === "cadmin" ? "user" : "cadmin"));
+  };
+
   return (
     <Container
       className="d-flex justify-content-center align-items-center"
       style={{ height: "100vh" }}
     >
-      <Card style={{ width: "20rem" }}>
-        <Card.Body>          
-          <Form onSubmit={handleSubmit}>            
-            {/*<Form.Group controlId="type">
-              <Form.Label>Rol</Form.Label>
-              <Form.Control
-                as="select"
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-              >
-                <option value="user">Usuario</option>
-                <option value="admin">Administrador</option>
-              </Form.Control>
-            </Form.Group>*/}
+      <div
+        style={{
+          textAlign: "left",
+          marginBottom: "20px",
+          position: "absolute",
+          top: "90px",
+          width: "100%",
+        }}
+      >
+        <img src="/logo.png" alt="Simotec Logo" className="w-16 mr-16" />
+      </div>
+
+      <Card style={{ width: "20rem", marginTop: "70px" }}>
+        <Card.Body>
+          <div style={{ textAlign: "center", marginBottom: "15px" }}>
+            {/* Texto condicional */}
+            <h3 style={{ color: "#007bff" }}>
+              {role === "cadmin" ? "Dashboard Empresa" : "Dashboard Trabajador"}
+            </h3>
+            <h4>Inicio de sesión</h4>
+          </div>
+          <Form onSubmit={handleSubmit}>
             <Form.Group controlId="email">
-              <Form.Label>Email</Form.Label>
               <Form.Control
                 type="email"
-                placeholder="Ingrese su email"
+                placeholder="EMAIL"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="mb-3"
               />
             </Form.Group>
             <Form.Group controlId="password">
-              <Form.Label>Contraseña</Form.Label>
               <Form.Control
                 type="password"
-                placeholder="Ingrese su contraseña"
+                placeholder="Contraseña"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="mb-3"
               />
             </Form.Group>
-            <Button variant="primary" type="submit">
-              Iniciar sesión
+            <Button variant="success" type="submit" className="w-100 mb-2">
+              Ingresar
+            </Button>
+            {/*<Button
+              variant="success"
+              className="w-100"
+              style={{ backgroundColor: "#4caf50" }}
+            >
+              Registrarse
+            </Button> */}
+            
+            {/* Botón para cambiar entre roles */}
+            <Button
+              variant={role === "user" ? "primary" : "outline-primary"} // Cambia el estilo si el rol es "user"
+              className="w-100 mt-2"
+              onClick={toggleRole}
+            >
+              {role === "cadmin" ? "Login trabajador" : "Login empresa"}
             </Button>
           </Form>
         </Card.Body>
       </Card>
+
+      <div
+        style={{
+          position: "fixed",
+          bottom: "10px",
+          width: "100%",
+          textAlign: "center",
+          background: "lightgreen",
+        }}
+      >
+        <p>ECOS by Simotec</p>
+      </div>
     </Container>
   );
 };

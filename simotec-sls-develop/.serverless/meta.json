@@ -229,57 +229,19 @@
           ],
           "name": "simotec-sls-dev-deleteCompany"
         },
-        "loginUser": {
-          "handler": "src/maintainers/auth/userhandler.login",
-          "events": [
-            {
-              "http": {
-                "path": "auth/user/login",
-                "method": "post"
-              }
-            }
-          ],
-          "name": "simotec-sls-dev-loginUser"
-        },
-        "loginCadmin": {
-          "handler": "src/maintainers/auth/cadminHandler.login",
-          "events": [
-            {
-              "http": {
-                "path": "auth/cadmin/login",
-                "method": "post"
-              }
-            }
-          ],
-          "name": "simotec-sls-dev-loginCadmin"
-        },
-        "refresh": {
-          "handler": "src/maintainers/auth/handler.refreshToken",
+        "login": {
+          "handler": "src/maintainers/auth/handler.loginHandler",
           "events": [
             {
               "httpApi": {
-                "path": "/auth/refresh",
-                "method": "post"
+                "path": "/auth/login",
+                "method": "POST"
               },
               "resolvedMethod": "POST",
-              "resolvedPath": "/auth/refresh"
+              "resolvedPath": "/auth/login"
             }
           ],
-          "name": "simotec-sls-dev-refresh"
-        },
-        "logout": {
-          "handler": "src/maintainers/auth/handler.logout",
-          "events": [
-            {
-              "httpApi": {
-                "path": "/auth/logout",
-                "method": "post"
-              },
-              "resolvedMethod": "POST",
-              "resolvedPath": "/auth/logout"
-            }
-          ],
-          "name": "simotec-sls-dev-logout"
+          "name": "simotec-sls-dev-login"
         },
         "create-cicle": {
           "handler": "src/maintainers/cycles/handler.createEvaluationCycle",
@@ -481,50 +443,44 @@
     "userName": "simotec",
     "serviceProviderAwsAccountId": "762233747429",
     "serviceProviderAwsCfStackName": "simotec-sls-dev",
-    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:us-east-2:762233747429:stack/simotec-sls-dev/039cb390-f9db-11ef-ad34-0238656b277f",
-    "serviceProviderAwsCfStackCreated": "2025-03-05T16:00:52.714Z",
-    "serviceProviderAwsCfStackUpdated": "2025-03-13T17:28:29.968Z",
+    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:us-east-2:762233747429:stack/simotec-sls-dev/c1650b50-004a-11f0-b18d-0a94ac901c01",
+    "serviceProviderAwsCfStackCreated": "2025-03-13T20:35:52.184Z",
+    "serviceProviderAwsCfStackUpdated": "2025-03-14T14:36:41.601Z",
     "serviceProviderAwsCfStackStatus": "UPDATE_COMPLETE",
     "serviceProviderAwsCfStackOutputs": [
       {
-        "OutputKey": "LogoutLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-logout:30",
-        "Description": "Current Lambda function version",
-        "ExportName": "sls-simotec-sls-dev-LogoutLambdaFunctionQualifiedArn"
-      },
-      {
         "OutputKey": "GetUsersLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-getUsers:32",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-getUsers:47",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-GetUsersLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "UpdateCadminLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-updateCadmin:1",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-updateCadmin:16",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-UpdateCadminLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "ConfirmDashtestDashcompletionLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-confirm-test-completion:30",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-confirm-test-completion:45",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-ConfirmDashtestDashcompletionLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "DeleteCadminLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-deleteCadmin:1",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-deleteCadmin:16",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-DeleteCadminLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "StartDashtestLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-start-test:30",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-start-test:45",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-StartDashtestLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "HttpApiId",
-        "OutputValue": "m5oys6mzma",
+        "OutputValue": "zv58zspkli",
         "Description": "Id of the HTTP API",
         "ExportName": "sls-simotec-sls-dev-HttpApiId"
       },
@@ -535,129 +491,111 @@
       },
       {
         "OutputKey": "HttpApiUrl",
-        "OutputValue": "https://m5oys6mzma.execute-api.us-east-2.amazonaws.com",
+        "OutputValue": "https://zv58zspkli.execute-api.us-east-2.amazonaws.com",
         "Description": "URL of the HTTP API",
         "ExportName": "sls-simotec-sls-dev-HttpApiUrl"
       },
       {
-        "OutputKey": "RefreshLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-refresh:30",
-        "Description": "Current Lambda function version",
-        "ExportName": "sls-simotec-sls-dev-RefreshLambdaFunctionQualifiedArn"
-      },
-      {
         "OutputKey": "CreateDashcicleLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-create-cicle:30",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-create-cicle:45",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-CreateDashcicleLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "GetCompaniesLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-getCompanies:30",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-getCompanies:45",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-GetCompaniesLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "GetDashcicleLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-get-cicle:30",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-get-cicle:45",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-GetDashcicleLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "CreateUserLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-createUser:32",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-createUser:47",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-CreateUserLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "CreateCadminLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-createCadmin:1",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-createCadmin:16",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-CreateCadminLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "DeleteUserLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-deleteUser:32",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-deleteUser:47",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-DeleteUserLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "GetDashciclesLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-get-cicles:30",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-get-cicles:45",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-GetDashciclesLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "DeleteCompanyLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-deleteCompany:30",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-deleteCompany:45",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-DeleteCompanyLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "UpdateCompanyLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-updateCompany:30",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-updateCompany:45",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-UpdateCompanyLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "UpdateUserLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-updateUser:32",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-updateUser:47",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-UpdateUserLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "SaveDashtestDashprogressLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-save-test-progress:30",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-save-test-progress:45",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-SaveDashtestDashprogressLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "CreateCompanyLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-createCompany:30",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-createCompany:45",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-CreateCompanyLambdaFunctionQualifiedArn"
       },
       {
-        "OutputKey": "LoginUserLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-loginUser:2",
-        "Description": "Current Lambda function version",
-        "ExportName": "sls-simotec-sls-dev-LoginUserLambdaFunctionQualifiedArn"
-      },
-      {
-        "OutputKey": "LoginCadminLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-loginCadmin:2",
-        "Description": "Current Lambda function version",
-        "ExportName": "sls-simotec-sls-dev-LoginCadminLambdaFunctionQualifiedArn"
-      },
-      {
         "OutputKey": "UpdateDashcicleLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-update-cicle:30",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-update-cicle:45",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-UpdateDashcicleLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "GetDashtestDashprogressLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-get-test-progress:30",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-get-test-progress:45",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-GetDashtestDashprogressLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "GetCadminsLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-getCadmins:1",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-getCadmins:16",
         "Description": "Current Lambda function version",
         "ExportName": "sls-simotec-sls-dev-GetCadminsLambdaFunctionQualifiedArn"
       },
       {
-        "OutputKey": "DeleteDashcicleLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-delete-cicle:30",
+        "OutputKey": "LoginLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-login:41",
         "Description": "Current Lambda function version",
-        "ExportName": "sls-simotec-sls-dev-DeleteDashcicleLambdaFunctionQualifiedArn"
+        "ExportName": "sls-simotec-sls-dev-LoginLambdaFunctionQualifiedArn"
       },
       {
-        "OutputKey": "ServiceEndpoint",
-        "OutputValue": "https://e8r6oz4ige.execute-api.us-east-2.amazonaws.com/dev",
-        "Description": "URL of the service endpoint",
-        "ExportName": "sls-simotec-sls-dev-ServiceEndpoint"
+        "OutputKey": "DeleteDashcicleLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-2:762233747429:function:simotec-sls-dev-delete-cicle:44",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-simotec-sls-dev-DeleteDashcicleLambdaFunctionQualifiedArn"
       }
     ]
   }

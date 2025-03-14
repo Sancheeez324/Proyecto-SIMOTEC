@@ -6,6 +6,7 @@ import Navigation from "./components/Navigation.jsx";
 
 const Landing = lazy(() => import("./pages/landing/Landing.jsx"));
 const Login = lazy(() => import("./pages/login/Login.jsx"));
+const LoginSuperAdmin = lazy(() => import ("./pages/login/LoginSuperAdmin.jsx"));
 const TestComponent = lazy(() => import("./pages/test/TestComponent.jsx"));
 
 // Importaciones para el flujo de Cadmin
@@ -13,12 +14,28 @@ const AdminDashboard = lazy(() => import("./pages/cadmin/AdminDashboard.jsx"));
 const UserList = lazy(() => import("./pages/cadmin/UserList.jsx"));
 const AssignTest = lazy(() => import("./pages/cadmin/AssignTest.jsx"));
 
+// Ruta para superadmin
+const SuperAdminHome = lazy(() => import("./pages/super_admin/SuperAdminHome.jsx"));
+
 // Ruta de usuario
 const UserHome = lazy(() => import("./pages/user/UserHome.jsx"));
 
 const ProtectedRoute = ({ element, ...rest }) => {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? element : <Navigate to="/" />;
+};
+
+
+const SuperAdminProtectedRoute = ({ element, ...rest }) => {
+  const { hasRole } = useAuth();
+  return hasRole("super_admin") ? element : <Navigate to="/" />;
+};
+
+// Ruta para el login de superadmin (solo accesible manualmente)
+const SuperAdminLoginRoute = ({ element, ...rest }) => {
+  const { isAuthenticated } = useAuth();
+  // Si el usuario ya está autenticado, redirige a la página de superadmin
+  return isAuthenticated && role === "super_admin"  ? <Navigate to="/superadmin" /> : element;
 };
 
 function App() {
@@ -31,6 +48,12 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/contact" element={<h1>Contact</h1>} />
             <Route path="/login" element={<Login />} />
+            {/* Ruta de login de superadmin (solo accesible manualmente) */}
+            <Route
+              path="/superadmin"
+              element={<SuperAdminLoginRoute element={<LoginSuperAdmin />} />}
+            />
+
 
             {/* Test Component */}
             <Route path="/test" element={<TestComponent />} />
@@ -56,7 +79,10 @@ function App() {
               element={<ProtectedRoute element={<AssignTest />} />}
             />
             {/* RUTAS PARA SUPERADMINS */}
-
+            <Route
+              path="/superadmin/SuperAdminHome"
+              element={<SuperAdminProtectedRoute element={<SuperAdminHome />} />}
+            />
           </Routes>
         </Suspense>
       </AuthProvider>

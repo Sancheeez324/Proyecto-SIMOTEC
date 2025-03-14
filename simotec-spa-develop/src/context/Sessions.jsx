@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
 const AuthContext = createContext();
+
 export const useAuth = () => {
   const auth = useContext(AuthContext);
   if (!auth) {
@@ -15,35 +16,58 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userType, setUserType] = useState(null);
 
+  // Restaurar la sesión al cargar la aplicación
   useEffect(() => {
     const userToken = localStorage.getItem("token");
     const storedUserType = localStorage.getItem("type");
 
     if (userToken && storedUserType) {
       setIsAuthenticated(true);
-      setUserType(storedUserType); // Restablecer el tipo de usuario desde localStorage
+      setUserType(storedUserType);
     }
-  }, []); // Esto se ejecuta una vez al montar el componente, asegurando la restauración de la sesión
+  }, []);
 
   const login = (token, user, type) => {
-    logout(); // Limpiar cualquier sesión previa
+    // Limpiar cualquier sesión previa
+    logout();
+
+    // Guardar datos en localStorage
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
     localStorage.setItem("type", type);
-    setUserType(type);
+
+    // Actualizar estado
     setIsAuthenticated(true);
+    setUserType(type);
   };
 
   const logout = () => {
+    // Limpiar localStorage
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("type");
-    setUserType(null);
+
+    // Actualizar estado
     setIsAuthenticated(false);
-    return <Navigate to="/" />;
+    setUserType(null);
   };
 
-  const auth = useMemo(() => ({ isAuthenticated, userType, login, logout }), [isAuthenticated, userType]);
+  // Verificar si el usuario tiene un rol específico
+  const hasRole = (role) => {
+    return isAuthenticated && userType === role;
+  };
+
+  // Memoizar el valor del contexto para optimizar rendimiento
+  const auth = useMemo(
+    () => ({
+      isAuthenticated,
+      userType,
+      login,
+      logout,
+      hasRole, // Añadir función para verificar roles
+    }),
+    [isAuthenticated, userType]
+  );
 
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 };
