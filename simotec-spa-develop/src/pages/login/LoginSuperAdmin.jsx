@@ -31,9 +31,26 @@ const SuperAdminLogin = () => {
   };
 
   return (
-    <Container className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+    <Container className="d-flex justify-content-center align-items-center"     
+    style={{ height: "100vh" }}    
+    >
+
+      <div
+        style={{
+          textAlign: "left",
+          marginBottom: "20px",
+          position: "absolute",
+          top: "90px",
+          left: "20px",
+          width: "900px",
+        }}
+      >
+        <img src="src\fotos\IconSinFondo.png" alt="Simotec Logo" className="w-25" />
+      </div>
+
       <Card style={{ width: "20rem" }}>
         <Card.Body>
+          
           <div style={{ textAlign: "center", marginBottom: "15px" }}>
             <h3 style={{ color: "#007bff" }}>SuperAdmin Panel</h3>
             <h4>Inicio de sesión</h4>

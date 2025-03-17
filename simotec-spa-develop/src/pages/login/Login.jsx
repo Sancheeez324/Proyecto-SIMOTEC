@@ -57,10 +57,11 @@ const Login = () => {
           marginBottom: "20px",
           position: "absolute",
           top: "90px",
-          width: "100%",
+          left: "20px",
+          width: "900px",
         }}
       >
-        <img src="/logo.png" alt="Simotec Logo" className="w-16 mr-16" />
+        <img src="src\fotos\IconSinFondo.png" alt="Simotec Logo" className="w-25" />
       </div>
 
       <Card style={{ width: "20rem", marginTop: "70px" }}>
@@ -116,14 +117,28 @@ const Login = () => {
 
       <div
         style={{
-          position: "fixed",
-          bottom: "10px",
-          width: "100%",
-          textAlign: "center",
-          background: "lightgreen",
+          position: "fixed", // Fija la barra en la parte inferior
+          bottom: "0", // Pegada al fondo
+          width: "100%", // Ocupa todo el ancho
+          height: "30px", // Altura de la barra
+          background: "lightgreen", // Color de fondo
         }}
       >
-        <p>ECOS by Simotec</p>
+        {/* Imagen por encima de la barra */}
+        <div
+          style={{
+            position: "absolute", // Permite superponer la imagen
+            bottom: "50px", // Coloca la imagen justo encima de la barra
+            left: "50%", // Centra horizontalmente
+            transform: "translateX(-50%)", // Ajusta el centrado
+          }}
+        >
+          <img
+            src="src/fotos/Icon2SinFondo.png"
+            alt="Simotec Logo"
+            style={{ width: "60px", height: "auto" }} // Ajusta el tamaño de la imagen
+          />
+        </div>
       </div>
     </Container>
   );
