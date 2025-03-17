@@ -276,7 +276,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/users/handler.listUsers",
               "Runtime": "nodejs20.x",
@@ -321,7 +321,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/users/handler.createUser",
               "Runtime": "nodejs20.x",
@@ -366,7 +366,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/users/handler.updateUser",
               "Runtime": "nodejs20.x",
@@ -411,7 +411,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/users/handler.deleteUser",
               "Runtime": "nodejs20.x",
@@ -456,7 +456,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/cadmins/handler.listCadmins",
               "Runtime": "nodejs20.x",
@@ -501,7 +501,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/cadmins/handler.createCadmin",
               "Runtime": "nodejs20.x",
@@ -546,7 +546,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/cadmins/handler.updateCadmin",
               "Runtime": "nodejs20.x",
@@ -591,7 +591,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/cadmins/handler.deleteCadmin",
               "Runtime": "nodejs20.x",
@@ -636,7 +636,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/companies/handler.listCompanies",
               "Runtime": "nodejs20.x",
@@ -681,7 +681,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/companies/handler.createCompany",
               "Runtime": "nodejs20.x",
@@ -726,7 +726,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/companies/handler.editCompany",
               "Runtime": "nodejs20.x",
@@ -771,7 +771,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/companies/handler.deleteCompany",
               "Runtime": "nodejs20.x",
@@ -816,7 +816,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/auth/handler.loginHandler",
               "Runtime": "nodejs20.x",
@@ -861,7 +861,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/cycles/handler.createEvaluationCycle",
               "Runtime": "nodejs20.x",
@@ -906,7 +906,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/cycles/handler.listCycles",
               "Runtime": "nodejs20.x",
@@ -951,7 +951,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/cycles/handler.getCycle",
               "Runtime": "nodejs20.x",
@@ -996,7 +996,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/cycles/handler.updateCycle",
               "Runtime": "nodejs20.x",
@@ -1041,7 +1041,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/cycles/handler.deleteCycle",
               "Runtime": "nodejs20.x",
@@ -1086,7 +1086,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/users-tests/handler.startTest",
               "Runtime": "nodejs20.x",
@@ -1131,7 +1131,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/users-tests/handler.saveTestProgress",
               "Runtime": "nodejs20.x",
@@ -1176,7 +1176,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/users-tests/handler.getTestProgress",
               "Runtime": "nodejs20.x",
@@ -1221,7 +1221,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-2-31c921f8-650a",
-                "S3Key": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z/simotec-sls.zip"
+                "S3Key": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z/simotec-sls.zip"
               },
               "Handler": "src/maintainers/users-tests/handler.confirmTestCompletion",
               "Runtime": "nodejs20.x",
@@ -1261,224 +1261,224 @@
               "ConfirmDashtestDashcompletionLogGroup"
             ]
           },
-          "GetUsersLambdaVersionDlLKWV2Eo2zQi0BE2BiPpxrpktfSZlGMAJVWkU230": {
+          "GetUsersLambdaVersion90YAPgBY5zylz5jQsL7YobrAAWKN6gEApM9So6YYM": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "GetUsersLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "CreateUserLambdaVersion5zZy9SicjA6uzXZobIsZHJ5kywbgEPTgvOX7qdQWVJc": {
+          "CreateUserLambdaVersionrodgZ1bLIiF6Itw2o1DitXn5xPKdXGSeAzgjZfYnHBs": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "CreateUserLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "UpdateUserLambdaVersionMfhTsXnk8moEBQiQwmlvZ8zhV7W6Hd0Z7anyR2ESrY": {
+          "UpdateUserLambdaVersion7zOGOPHKOUA2JBcNB0xJBUCAUstMQvUfPNSqL2U3k0": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "UpdateUserLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "DeleteUserLambdaVersionMQ1ewCYVaZLuhlwi40gahla9MD8cYRCMTxOfzr2DOiY": {
+          "DeleteUserLambdaVersionc9xu3EQKEDINwN3HbaBYx7lCwUvitOtZEWEDynrVVf8": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "DeleteUserLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "GetCadminsLambdaVersionW4qgaY0U6xDqjzGMglFaUMYy8mCCHTaIXa3LaZ2bBM": {
+          "GetCadminsLambdaVersionqqTyYHCMiTOSNgr6F4dniGYL1NIz2t1Y6mYG9bLWyGw": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "GetCadminsLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "CreateCadminLambdaVersionQ5K2WApQZv6uDsdcYBvt0WZfiQCFk7uGhBBxinZbyk": {
+          "CreateCadminLambdaVersionfd2NHMdg6NiMo4M2RI4C5grf8sqaUQDpyfZYGydGjc": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "CreateCadminLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "UpdateCadminLambdaVersionM5UO7D00lddSHxv9un02Clxu54FfcHxD4RBFbzPUZNI": {
+          "UpdateCadminLambdaVersionIHCSinJt4BTiLnBLuAWkCx8po5cJpNVcO44voVch8": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "UpdateCadminLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "DeleteCadminLambdaVersionTbFcTYw4y8kdSeFdIXAGng5iobNbgHbmIYKceCQ8": {
+          "DeleteCadminLambdaVersionYPyovbzQGyleQzgdF9TqywxS7g8yQZHdu7pmzO8TCo": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "DeleteCadminLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "GetCompaniesLambdaVersionY2PBrMkctdF4EDMKILxYwYxqkLrXNkOrL1D9jUoGY": {
+          "GetCompaniesLambdaVersioney79rvSY1ECsqiOvaBpeI7b6N6C5a13VcX1GZVofZiE": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "GetCompaniesLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "CreateCompanyLambdaVersiong5H0XvqV76XGZ9JvSBzr1Ja6Ft457VTPms6iHMIm8": {
+          "CreateCompanyLambdaVersionYq6pYymASYGLDlhd3IkTQh4aUlBlPr7GDZzzd2Mgo0": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "CreateCompanyLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "UpdateCompanyLambdaVersionIhC9YgRorXf0P3kmu5gIpV4ZQ2Zv4WG01kpT5aOLQ": {
+          "UpdateCompanyLambdaVersionsYZGWQr5A4GcaXkVE6qFahdgTo4SyIORePmE9YXRHw": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "UpdateCompanyLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "DeleteCompanyLambdaVersionlIdt1qXmj4OcUPXfVUoQ3AgcGRRTcIhmfr8HCglSQE": {
+          "DeleteCompanyLambdaVersion1gsaYGv8CdGSirmOZhsOTH5TAlqpQsgpePibGLQvQ": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "DeleteCompanyLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "LoginLambdaVersionH4vXCh0V7Wc0pSHzGSfoIH350LRbK15avcT370Loe4g": {
+          "LoginLambdaVersionAeq5EfXpDzAfKUSonvYLZIBRwsxyfhbpQVAxraDxBs": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "LoginLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "CreateDashcicleLambdaVersionpScRtJNSbBwaCEeskUQ7WutwRVOfRhkIrrjbgSAt0k": {
+          "CreateDashcicleLambdaVersionVSdW3R0kucDwYIatzV6vs1PJSLKIeVBrkNoWz1LMo": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "CreateDashcicleLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "GetDashciclesLambdaVersionYKX7kxCWWq1ku6beob2Ak3kZPcwZWLXz50hd0gC13hk": {
+          "GetDashciclesLambdaVersionMDnYs0GdIpHiJJL1YWIZVBGHCnNyf0xUNoMURyuEw": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "GetDashciclesLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "GetDashcicleLambdaVersionTKicQpuZH4loLqr3mk4NngnXHIl7JgkedXPMcKqRjUs": {
+          "GetDashcicleLambdaVersionKg91js1Mp2Xvxz49X5I8RYv69oJng1ovFyINyFX9xw": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "GetDashcicleLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "UpdateDashcicleLambdaVersionuBQtPepzUIRkozMisV6yN4UE84Y6YWc8MfQgavUnAY": {
+          "UpdateDashcicleLambdaVersionL9csrJDgS66pb04OYtios4JgjnJqZgdZ651CjNmywKw": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "UpdateDashcicleLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "DeleteDashcicleLambdaVersion5dYzOc1UBLOkGoNcDIVTBIxgW52CxjEtA3WriTzSuM": {
+          "DeleteDashcicleLambdaVersion7HmJWnvRVYX3uqNaw1SSuR3Yr0JaLTJAhFhTSBINas": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "DeleteDashcicleLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "StartDashtestLambdaVersionm7Ix99iwwMBMEL9Zjdwr3cxhXhpzn68c3Rc628XWrlk": {
+          "StartDashtestLambdaVersionYrMibNqYEol7pWN2QM8NoXaR9kmaLlFmv9XX0XPa4M": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "StartDashtestLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "SaveDashtestDashprogressLambdaVersionagdhvbC4ptpJxIBC3X8erEZBzTxCwoCBZw6uFnlTQ0o": {
+          "SaveDashtestDashprogressLambdaVersion3QnpBodOigsmuQC3Sz5AzVOLS10sOtXn9o7HZWr1fk": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "SaveDashtestDashprogressLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "GetDashtestDashprogressLambdaVersionEE3aewg7GkLHDNckYyilIJNYbIPqv6SFaWNiZqhOg": {
+          "GetDashtestDashprogressLambdaVersionDi1rBImfVZPgabkAZ4oqTs5kVrEUANacBqwFqfi8": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "GetDashtestDashprogressLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
-          "ConfirmDashtestDashcompletionLambdaVersionRAd9KhSvk3R4l5QLIx5Q57TBfUzUPiGYVVM6I3xJE": {
+          "ConfirmDashtestDashcompletionLambdaVersionDOxQx2EUTNCGqopw36YZUmt6HkWagYktLST2jVLg": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ConfirmDashtestDashcompletionLambdaFunction"
               },
-              "CodeSha256": "Gtzysjkbw84WqoPIkoxNTxdR1u8GoHUOndZgGJ3j0js="
+              "CodeSha256": "FXpjXfNmia0fWq8WsXdkESpJcah38HjHu0ONyH6E/bE="
             }
           },
           "HttpApi": {
@@ -3120,7 +3120,7 @@
           "GetUsersLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "GetUsersLambdaVersionDlLKWV2Eo2zQi0BE2BiPpxrpktfSZlGMAJVWkU230"
+              "Ref": "GetUsersLambdaVersion90YAPgBY5zylz5jQsL7YobrAAWKN6gEApM9So6YYM"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-GetUsersLambdaFunctionQualifiedArn"
@@ -3129,7 +3129,7 @@
           "CreateUserLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "CreateUserLambdaVersion5zZy9SicjA6uzXZobIsZHJ5kywbgEPTgvOX7qdQWVJc"
+              "Ref": "CreateUserLambdaVersionrodgZ1bLIiF6Itw2o1DitXn5xPKdXGSeAzgjZfYnHBs"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-CreateUserLambdaFunctionQualifiedArn"
@@ -3138,7 +3138,7 @@
           "UpdateUserLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "UpdateUserLambdaVersionMfhTsXnk8moEBQiQwmlvZ8zhV7W6Hd0Z7anyR2ESrY"
+              "Ref": "UpdateUserLambdaVersion7zOGOPHKOUA2JBcNB0xJBUCAUstMQvUfPNSqL2U3k0"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-UpdateUserLambdaFunctionQualifiedArn"
@@ -3147,7 +3147,7 @@
           "DeleteUserLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "DeleteUserLambdaVersionMQ1ewCYVaZLuhlwi40gahla9MD8cYRCMTxOfzr2DOiY"
+              "Ref": "DeleteUserLambdaVersionc9xu3EQKEDINwN3HbaBYx7lCwUvitOtZEWEDynrVVf8"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-DeleteUserLambdaFunctionQualifiedArn"
@@ -3156,7 +3156,7 @@
           "GetCadminsLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "GetCadminsLambdaVersionW4qgaY0U6xDqjzGMglFaUMYy8mCCHTaIXa3LaZ2bBM"
+              "Ref": "GetCadminsLambdaVersionqqTyYHCMiTOSNgr6F4dniGYL1NIz2t1Y6mYG9bLWyGw"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-GetCadminsLambdaFunctionQualifiedArn"
@@ -3165,7 +3165,7 @@
           "CreateCadminLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "CreateCadminLambdaVersionQ5K2WApQZv6uDsdcYBvt0WZfiQCFk7uGhBBxinZbyk"
+              "Ref": "CreateCadminLambdaVersionfd2NHMdg6NiMo4M2RI4C5grf8sqaUQDpyfZYGydGjc"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-CreateCadminLambdaFunctionQualifiedArn"
@@ -3174,7 +3174,7 @@
           "UpdateCadminLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "UpdateCadminLambdaVersionM5UO7D00lddSHxv9un02Clxu54FfcHxD4RBFbzPUZNI"
+              "Ref": "UpdateCadminLambdaVersionIHCSinJt4BTiLnBLuAWkCx8po5cJpNVcO44voVch8"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-UpdateCadminLambdaFunctionQualifiedArn"
@@ -3183,7 +3183,7 @@
           "DeleteCadminLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "DeleteCadminLambdaVersionTbFcTYw4y8kdSeFdIXAGng5iobNbgHbmIYKceCQ8"
+              "Ref": "DeleteCadminLambdaVersionYPyovbzQGyleQzgdF9TqywxS7g8yQZHdu7pmzO8TCo"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-DeleteCadminLambdaFunctionQualifiedArn"
@@ -3192,7 +3192,7 @@
           "GetCompaniesLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "GetCompaniesLambdaVersionY2PBrMkctdF4EDMKILxYwYxqkLrXNkOrL1D9jUoGY"
+              "Ref": "GetCompaniesLambdaVersioney79rvSY1ECsqiOvaBpeI7b6N6C5a13VcX1GZVofZiE"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-GetCompaniesLambdaFunctionQualifiedArn"
@@ -3201,7 +3201,7 @@
           "CreateCompanyLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "CreateCompanyLambdaVersiong5H0XvqV76XGZ9JvSBzr1Ja6Ft457VTPms6iHMIm8"
+              "Ref": "CreateCompanyLambdaVersionYq6pYymASYGLDlhd3IkTQh4aUlBlPr7GDZzzd2Mgo0"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-CreateCompanyLambdaFunctionQualifiedArn"
@@ -3210,7 +3210,7 @@
           "UpdateCompanyLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "UpdateCompanyLambdaVersionIhC9YgRorXf0P3kmu5gIpV4ZQ2Zv4WG01kpT5aOLQ"
+              "Ref": "UpdateCompanyLambdaVersionsYZGWQr5A4GcaXkVE6qFahdgTo4SyIORePmE9YXRHw"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-UpdateCompanyLambdaFunctionQualifiedArn"
@@ -3219,7 +3219,7 @@
           "DeleteCompanyLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "DeleteCompanyLambdaVersionlIdt1qXmj4OcUPXfVUoQ3AgcGRRTcIhmfr8HCglSQE"
+              "Ref": "DeleteCompanyLambdaVersion1gsaYGv8CdGSirmOZhsOTH5TAlqpQsgpePibGLQvQ"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-DeleteCompanyLambdaFunctionQualifiedArn"
@@ -3228,7 +3228,7 @@
           "LoginLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "LoginLambdaVersionH4vXCh0V7Wc0pSHzGSfoIH350LRbK15avcT370Loe4g"
+              "Ref": "LoginLambdaVersionAeq5EfXpDzAfKUSonvYLZIBRwsxyfhbpQVAxraDxBs"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-LoginLambdaFunctionQualifiedArn"
@@ -3237,7 +3237,7 @@
           "CreateDashcicleLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "CreateDashcicleLambdaVersionpScRtJNSbBwaCEeskUQ7WutwRVOfRhkIrrjbgSAt0k"
+              "Ref": "CreateDashcicleLambdaVersionVSdW3R0kucDwYIatzV6vs1PJSLKIeVBrkNoWz1LMo"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-CreateDashcicleLambdaFunctionQualifiedArn"
@@ -3246,7 +3246,7 @@
           "GetDashciclesLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "GetDashciclesLambdaVersionYKX7kxCWWq1ku6beob2Ak3kZPcwZWLXz50hd0gC13hk"
+              "Ref": "GetDashciclesLambdaVersionMDnYs0GdIpHiJJL1YWIZVBGHCnNyf0xUNoMURyuEw"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-GetDashciclesLambdaFunctionQualifiedArn"
@@ -3255,7 +3255,7 @@
           "GetDashcicleLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "GetDashcicleLambdaVersionTKicQpuZH4loLqr3mk4NngnXHIl7JgkedXPMcKqRjUs"
+              "Ref": "GetDashcicleLambdaVersionKg91js1Mp2Xvxz49X5I8RYv69oJng1ovFyINyFX9xw"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-GetDashcicleLambdaFunctionQualifiedArn"
@@ -3264,7 +3264,7 @@
           "UpdateDashcicleLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "UpdateDashcicleLambdaVersionuBQtPepzUIRkozMisV6yN4UE84Y6YWc8MfQgavUnAY"
+              "Ref": "UpdateDashcicleLambdaVersionL9csrJDgS66pb04OYtios4JgjnJqZgdZ651CjNmywKw"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-UpdateDashcicleLambdaFunctionQualifiedArn"
@@ -3273,7 +3273,7 @@
           "DeleteDashcicleLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "DeleteDashcicleLambdaVersion5dYzOc1UBLOkGoNcDIVTBIxgW52CxjEtA3WriTzSuM"
+              "Ref": "DeleteDashcicleLambdaVersion7HmJWnvRVYX3uqNaw1SSuR3Yr0JaLTJAhFhTSBINas"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-DeleteDashcicleLambdaFunctionQualifiedArn"
@@ -3282,7 +3282,7 @@
           "StartDashtestLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "StartDashtestLambdaVersionm7Ix99iwwMBMEL9Zjdwr3cxhXhpzn68c3Rc628XWrlk"
+              "Ref": "StartDashtestLambdaVersionYrMibNqYEol7pWN2QM8NoXaR9kmaLlFmv9XX0XPa4M"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-StartDashtestLambdaFunctionQualifiedArn"
@@ -3291,7 +3291,7 @@
           "SaveDashtestDashprogressLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "SaveDashtestDashprogressLambdaVersionagdhvbC4ptpJxIBC3X8erEZBzTxCwoCBZw6uFnlTQ0o"
+              "Ref": "SaveDashtestDashprogressLambdaVersion3QnpBodOigsmuQC3Sz5AzVOLS10sOtXn9o7HZWr1fk"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-SaveDashtestDashprogressLambdaFunctionQualifiedArn"
@@ -3300,7 +3300,7 @@
           "GetDashtestDashprogressLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "GetDashtestDashprogressLambdaVersionEE3aewg7GkLHDNckYyilIJNYbIPqv6SFaWNiZqhOg"
+              "Ref": "GetDashtestDashprogressLambdaVersionDi1rBImfVZPgabkAZ4oqTs5kVrEUANacBqwFqfi8"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-GetDashtestDashprogressLambdaFunctionQualifiedArn"
@@ -3309,7 +3309,7 @@
           "ConfirmDashtestDashcompletionLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ConfirmDashtestDashcompletionLambdaVersionRAd9KhSvk3R4l5QLIx5Q57TBfUzUPiGYVVM6I3xJE"
+              "Ref": "ConfirmDashtestDashcompletionLambdaVersionDOxQx2EUTNCGqopw36YZUmt6HkWagYktLST2jVLg"
             },
             "Export": {
               "Name": "sls-simotec-sls-dev-ConfirmDashtestDashcompletionLambdaFunctionQualifiedArn"
@@ -3377,7 +3377,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "GetUsersLambdaVersionDlLKWV2Eo2zQi0BE2BiPpxrpktfSZlGMAJVWkU230"
+        "versionLogicalId": "GetUsersLambdaVersion90YAPgBY5zylz5jQsL7YobrAAWKN6gEApM9So6YYM"
       },
       "createUser": {
         "handler": "src/maintainers/users/handler.createUser",
@@ -3397,7 +3397,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "CreateUserLambdaVersion5zZy9SicjA6uzXZobIsZHJ5kywbgEPTgvOX7qdQWVJc"
+        "versionLogicalId": "CreateUserLambdaVersionrodgZ1bLIiF6Itw2o1DitXn5xPKdXGSeAzgjZfYnHBs"
       },
       "updateUser": {
         "handler": "src/maintainers/users/handler.updateUser",
@@ -3417,7 +3417,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "UpdateUserLambdaVersionMfhTsXnk8moEBQiQwmlvZ8zhV7W6Hd0Z7anyR2ESrY"
+        "versionLogicalId": "UpdateUserLambdaVersion7zOGOPHKOUA2JBcNB0xJBUCAUstMQvUfPNSqL2U3k0"
       },
       "deleteUser": {
         "handler": "src/maintainers/users/handler.deleteUser",
@@ -3437,7 +3437,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "DeleteUserLambdaVersionMQ1ewCYVaZLuhlwi40gahla9MD8cYRCMTxOfzr2DOiY"
+        "versionLogicalId": "DeleteUserLambdaVersionc9xu3EQKEDINwN3HbaBYx7lCwUvitOtZEWEDynrVVf8"
       },
       "getCadmins": {
         "handler": "src/maintainers/cadmins/handler.listCadmins",
@@ -3457,7 +3457,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "GetCadminsLambdaVersionW4qgaY0U6xDqjzGMglFaUMYy8mCCHTaIXa3LaZ2bBM"
+        "versionLogicalId": "GetCadminsLambdaVersionqqTyYHCMiTOSNgr6F4dniGYL1NIz2t1Y6mYG9bLWyGw"
       },
       "createCadmin": {
         "handler": "src/maintainers/cadmins/handler.createCadmin",
@@ -3477,7 +3477,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "CreateCadminLambdaVersionQ5K2WApQZv6uDsdcYBvt0WZfiQCFk7uGhBBxinZbyk"
+        "versionLogicalId": "CreateCadminLambdaVersionfd2NHMdg6NiMo4M2RI4C5grf8sqaUQDpyfZYGydGjc"
       },
       "updateCadmin": {
         "handler": "src/maintainers/cadmins/handler.updateCadmin",
@@ -3497,7 +3497,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "UpdateCadminLambdaVersionM5UO7D00lddSHxv9un02Clxu54FfcHxD4RBFbzPUZNI"
+        "versionLogicalId": "UpdateCadminLambdaVersionIHCSinJt4BTiLnBLuAWkCx8po5cJpNVcO44voVch8"
       },
       "deleteCadmin": {
         "handler": "src/maintainers/cadmins/handler.deleteCadmin",
@@ -3517,7 +3517,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "DeleteCadminLambdaVersionTbFcTYw4y8kdSeFdIXAGng5iobNbgHbmIYKceCQ8"
+        "versionLogicalId": "DeleteCadminLambdaVersionYPyovbzQGyleQzgdF9TqywxS7g8yQZHdu7pmzO8TCo"
       },
       "getCompanies": {
         "handler": "src/maintainers/companies/handler.listCompanies",
@@ -3537,7 +3537,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "GetCompaniesLambdaVersionY2PBrMkctdF4EDMKILxYwYxqkLrXNkOrL1D9jUoGY"
+        "versionLogicalId": "GetCompaniesLambdaVersioney79rvSY1ECsqiOvaBpeI7b6N6C5a13VcX1GZVofZiE"
       },
       "createCompany": {
         "handler": "src/maintainers/companies/handler.createCompany",
@@ -3557,7 +3557,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "CreateCompanyLambdaVersiong5H0XvqV76XGZ9JvSBzr1Ja6Ft457VTPms6iHMIm8"
+        "versionLogicalId": "CreateCompanyLambdaVersionYq6pYymASYGLDlhd3IkTQh4aUlBlPr7GDZzzd2Mgo0"
       },
       "updateCompany": {
         "handler": "src/maintainers/companies/handler.editCompany",
@@ -3577,7 +3577,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "UpdateCompanyLambdaVersionIhC9YgRorXf0P3kmu5gIpV4ZQ2Zv4WG01kpT5aOLQ"
+        "versionLogicalId": "UpdateCompanyLambdaVersionsYZGWQr5A4GcaXkVE6qFahdgTo4SyIORePmE9YXRHw"
       },
       "deleteCompany": {
         "handler": "src/maintainers/companies/handler.deleteCompany",
@@ -3597,7 +3597,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "DeleteCompanyLambdaVersionlIdt1qXmj4OcUPXfVUoQ3AgcGRRTcIhmfr8HCglSQE"
+        "versionLogicalId": "DeleteCompanyLambdaVersion1gsaYGv8CdGSirmOZhsOTH5TAlqpQsgpePibGLQvQ"
       },
       "login": {
         "handler": "src/maintainers/auth/handler.loginHandler",
@@ -3617,7 +3617,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "LoginLambdaVersionH4vXCh0V7Wc0pSHzGSfoIH350LRbK15avcT370Loe4g"
+        "versionLogicalId": "LoginLambdaVersionAeq5EfXpDzAfKUSonvYLZIBRwsxyfhbpQVAxraDxBs"
       },
       "create-cicle": {
         "handler": "src/maintainers/cycles/handler.createEvaluationCycle",
@@ -3637,7 +3637,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "CreateDashcicleLambdaVersionpScRtJNSbBwaCEeskUQ7WutwRVOfRhkIrrjbgSAt0k"
+        "versionLogicalId": "CreateDashcicleLambdaVersionVSdW3R0kucDwYIatzV6vs1PJSLKIeVBrkNoWz1LMo"
       },
       "get-cicles": {
         "handler": "src/maintainers/cycles/handler.listCycles",
@@ -3657,7 +3657,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "GetDashciclesLambdaVersionYKX7kxCWWq1ku6beob2Ak3kZPcwZWLXz50hd0gC13hk"
+        "versionLogicalId": "GetDashciclesLambdaVersionMDnYs0GdIpHiJJL1YWIZVBGHCnNyf0xUNoMURyuEw"
       },
       "get-cicle": {
         "handler": "src/maintainers/cycles/handler.getCycle",
@@ -3677,7 +3677,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "GetDashcicleLambdaVersionTKicQpuZH4loLqr3mk4NngnXHIl7JgkedXPMcKqRjUs"
+        "versionLogicalId": "GetDashcicleLambdaVersionKg91js1Mp2Xvxz49X5I8RYv69oJng1ovFyINyFX9xw"
       },
       "update-cicle": {
         "handler": "src/maintainers/cycles/handler.updateCycle",
@@ -3697,7 +3697,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "UpdateDashcicleLambdaVersionuBQtPepzUIRkozMisV6yN4UE84Y6YWc8MfQgavUnAY"
+        "versionLogicalId": "UpdateDashcicleLambdaVersionL9csrJDgS66pb04OYtios4JgjnJqZgdZ651CjNmywKw"
       },
       "delete-cicle": {
         "handler": "src/maintainers/cycles/handler.deleteCycle",
@@ -3717,7 +3717,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "DeleteDashcicleLambdaVersion5dYzOc1UBLOkGoNcDIVTBIxgW52CxjEtA3WriTzSuM"
+        "versionLogicalId": "DeleteDashcicleLambdaVersion7HmJWnvRVYX3uqNaw1SSuR3Yr0JaLTJAhFhTSBINas"
       },
       "start-test": {
         "handler": "src/maintainers/users-tests/handler.startTest",
@@ -3737,7 +3737,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "StartDashtestLambdaVersionm7Ix99iwwMBMEL9Zjdwr3cxhXhpzn68c3Rc628XWrlk"
+        "versionLogicalId": "StartDashtestLambdaVersionYrMibNqYEol7pWN2QM8NoXaR9kmaLlFmv9XX0XPa4M"
       },
       "save-test-progress": {
         "handler": "src/maintainers/users-tests/handler.saveTestProgress",
@@ -3757,7 +3757,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "SaveDashtestDashprogressLambdaVersionagdhvbC4ptpJxIBC3X8erEZBzTxCwoCBZw6uFnlTQ0o"
+        "versionLogicalId": "SaveDashtestDashprogressLambdaVersion3QnpBodOigsmuQC3Sz5AzVOLS10sOtXn9o7HZWr1fk"
       },
       "get-test-progress": {
         "handler": "src/maintainers/users-tests/handler.getTestProgress",
@@ -3777,7 +3777,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "GetDashtestDashprogressLambdaVersionEE3aewg7GkLHDNckYyilIJNYbIPqv6SFaWNiZqhOg"
+        "versionLogicalId": "GetDashtestDashprogressLambdaVersionDi1rBImfVZPgabkAZ4oqTs5kVrEUANacBqwFqfi8"
       },
       "confirm-test-completion": {
         "handler": "src/maintainers/users-tests/handler.confirmTestCompletion",
@@ -3797,7 +3797,7 @@
         "timeout": 20,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "ConfirmDashtestDashcompletionLambdaVersionRAd9KhSvk3R4l5QLIx5Q57TBfUzUPiGYVVM6I3xJE"
+        "versionLogicalId": "ConfirmDashtestDashcompletionLambdaVersionDOxQx2EUTNCGqopw36YZUmt6HkWagYktLST2jVLg"
       }
     },
     "configValidationMode": "warn",
@@ -3822,7 +3822,7 @@
     "artifact": "C:\\Users\\alfre\\OneDrive\\Documentos\\GitHub\\Proyecto\\simotec-sls-develop\\.serverless\\simotec-sls.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/simotec-sls/dev/1741962986401-2025-03-14T14:36:26.401Z",
+    "artifactDirectoryName": "serverless/simotec-sls/dev/1742241252892-2025-03-17T19:54:12.892Z",
     "artifact": "simotec-sls.zip"
   }
 }

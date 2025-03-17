@@ -6,12 +6,15 @@ const UserList = () => {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false); // Estado para manejar el cargador
   const [errorMessage, setErrorMessage] = useState(""); // Estado para manejar errores
-  const [showModal, setShowModal] = useState(false);
-  const [editMode, setEditMode] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false); // Modal para crear usuarios
+  const [showEditModal, setShowEditModal] = useState(false); // Modal para editar usuarios
   const [selectedUser, setSelectedUser] = useState({
-    name: "",
+    rut: "",
+    nombre: "",
     email: "",
     password: "",
+    sector: "mineria", // Valor por defecto para el sector
+    cargo: "operador"
   });
 
   useEffect(() => {
@@ -23,10 +26,8 @@ const UserList = () => {
     setErrorMessage(""); // Limpiar cualquier error previo
 
     try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      const id = user.id;
       const response = await sendRequest(
-        `${import.meta.env.VITE_API_URL}/users/${id}`,
+        `${import.meta.env.VITE_API_URL}/users`, // Endpoint para listar usuarios
         "GET"
       );
 
@@ -44,18 +45,35 @@ const UserList = () => {
     }
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setEditMode(false);
-    setSelectedUser({ name: "", email: "", password: "" });
+  const handleCloseCreateModal = () => {
+    setShowCreateModal(false);
+    setSelectedUser({
+      rut: "",
+      nombre: "",
+      email: "",
+      password: "",
+      sector: "mineria",
+    });
   };
 
-  const handleShowModal = (user = null) => {
-    if (user) {
-      setSelectedUser(user);
-      setEditMode(true);
-    }
-    setShowModal(true);
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setSelectedUser({
+      rut: "",
+      nombre: "",
+      email: "",
+      password: "",
+      sector: "mineria",
+    });
+  };
+
+  const handleShowCreateModal = () => {
+    setShowCreateModal(true);
+  };
+
+  const handleShowEditModal = (user) => {
+    setSelectedUser(user);
+    setShowEditModal(true);
   };
 
   const handleChange = (e) => {
@@ -63,34 +81,47 @@ const UserList = () => {
     setSelectedUser((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleCreateUser = async (e) => {
     e.preventDefault();
-    const id = JSON.parse(localStorage.getItem("user")).id;
-    selectedUser.cadminId = id;
-    if (editMode) {
-      // Aquí se haría la lógica para actualizar el usuario en la API
-      console.log("Actualizando usuario", selectedUser);
-      alert("Por implementar...");
-    } else {
-      // Aquí se haría la lógica para crear un nuevo usuario en la API
-      console.log("Creando usuario", selectedUser);
-      const response = await sendRequest(
-        `${import.meta.env.VITE_API_URL}/users`,
-        "POST",
-        selectedUser
-      );
-
-      if (response.status === 201) {
-        alert("Usuario registrado exitosamente");
-        fetchUsers();
-      } else if (response.status === 400) {
-        alert("Faltan datos");
-      } else if (response.status === 500) {
-        alert("Error interno del servidor");
-      }
-      // alert("Por implementar...");
+  
+    // Obtener el auth_user_id del usuario loggeado
+    const cadmin_id = JSON.parse(localStorage.getItem("user")).id;
+  
+    const userData = {
+      rut: selectedUser.rut,
+      nombre: selectedUser.nombre,
+      email: selectedUser.email,
+      password: selectedUser.password,
+      sector: selectedUser.sector,
+      cargo: selectedUser.cargo,
+      cadmin_id: cadmin_id, // Usar el auth_user_id como cadmin_id
+    };
+  
+    console.log("Datos enviados al backend:", userData);
+  
+    const response = await sendRequest(
+      `${import.meta.env.VITE_API_URL}/users`,
+      "POST",
+      userData
+    );
+  
+    if (response.status === 201) {
+      alert("Usuario registrado exitosamente");
+      fetchUsers();
+      handleCloseCreateModal();
+    } else if (response.status === 400) {
+      alert("Faltan datos");
+    } else if (response.status === 500) {
+      alert("Error interno del servidor");
     }
-    handleCloseModal();
+  };
+
+  const handleEditUser = async (e) => {
+    e.preventDefault();
+    // Aquí se haría la lógica para actualizar el usuario en la API
+    console.log("Actualizando usuario", selectedUser);
+    alert("Por implementar...");
+    handleCloseEditModal();
   };
 
   return (
@@ -100,7 +131,7 @@ const UserList = () => {
       <Button
         variant="primary"
         className="mb-4"
-        onClick={() => handleShowModal()}
+        onClick={handleShowCreateModal}
       >
         Registrar Nuevo Usuario
       </Button>
@@ -118,23 +149,27 @@ const UserList = () => {
           <Table striped bordered hover>
             <thead>
               <tr>
-                <th>ID</th>
+                <th>RUT</th>
                 <th>Nombre</th>
-                <th>Email</th>
+                <th>Fecha de Nacimiento</th>
+                <th>Sector</th>
+                <th>Cargo</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {users.map((user) => (
                 <tr key={user.id}>
-                  <td>{user.id}</td>
-                  <td>{user.username}</td>
-                  <td>{user.email}</td>
+                  <td>{user.rut}</td>
+                  <td>{user.nombre}</td>
+                  <td>{user.fecha_nac}</td>
+                  <td>{user.sector}</td>
+                  <td>{user.cargo}</td>
                   <td>
                     <Button
                       variant="warning"
                       className="me-2"
-                      onClick={() => handleShowModal(user)}
+                      onClick={() => handleShowEditModal(user)}
                     >
                       Editar
                     </Button>
@@ -147,21 +182,29 @@ const UserList = () => {
         </>
       )}
 
-      {/* Modal para Crear/Editar Usuario */}
-      <Modal show={showModal} onHide={handleCloseModal}>
+      {/* Modal para Crear Usuario */}
+      <Modal show={showCreateModal} onHide={handleCloseCreateModal}>
         <Modal.Header closeButton>
-          <Modal.Title>
-            {editMode ? "Editar Usuario" : "Registrar Usuario"}
-          </Modal.Title>
+          <Modal.Title>Registrar Usuario</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="name">
+          <Form onSubmit={handleCreateUser}>
+            <Form.Group className="mb-3" controlId="rut">
+              <Form.Label>RUT</Form.Label>
+              <Form.Control
+                type="text"
+                name="rut"
+                value={selectedUser.rut}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="nombre">
               <Form.Label>Nombre</Form.Label>
               <Form.Control
                 type="text"
-                name="name"
-                value={selectedUser.username}
+                name="nombre"
+                value={selectedUser.nombre}
                 onChange={handleChange}
                 required
               />
@@ -176,20 +219,77 @@ const UserList = () => {
                 required
               />
             </Form.Group>
-            {!editMode && (
-              <Form.Group className="mb-3" controlId="password">
-                <Form.Label>Contraseña</Form.Label>
-                <Form.Control
-                  type="password"
-                  name="password"
-                  value={selectedUser.password}
-                  onChange={handleChange}
-                  required={!editMode}
-                />
-              </Form.Group>
-            )}
+            <Form.Group className="mb-3" controlId="password">
+              <Form.Label>Contraseña</Form.Label>
+              <Form.Control
+                type="password"
+                name="password"
+                value={selectedUser.password}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="sector">
+              <Form.Label>Sector</Form.Label>
+              <Form.Select
+                name="sector"
+                value={selectedUser.sector}
+                onChange={handleChange}
+                required
+              >
+                <option value="mineria">minería</option>
+                <option value="portuaria">portuario</option>
+                <option value="construccion">construcción</option>
+              </Form.Select>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="cargo">
+              <Form.Label>Cargo</Form.Label>
+              <Form.Select
+                name="cargo"
+                value={selectedUser.cargo}
+                onChange={handleChange}
+                required
+              >
+                <option value="operador">operario</option>
+                <option value="supervisor">supervisor</option>
+              </Form.Select>
+            </Form.Group>
             <Button variant="primary" type="submit">
-              {editMode ? "Guardar Cambios" : "Registrar"}
+              Registrar
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
+
+      {/* Modal para Editar Usuario */}
+      <Modal show={showEditModal} onHide={handleCloseEditModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Editar Usuario</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleEditUser}>
+            <Form.Group className="mb-3" controlId="nombre">
+              <Form.Label>Nombre</Form.Label>
+              <Form.Control
+                type="text"
+                name="nombre"
+                value={selectedUser.nombre}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="email">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                value={selectedUser.email}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit">
+              Guardar Cambios
             </Button>
           </Form>
         </Modal.Body>

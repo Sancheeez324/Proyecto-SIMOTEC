@@ -21,8 +21,13 @@ const Navigation = () => {
           <Nav.Link as={Link} to="/contact">
             Contacto
           </Nav.Link>
-          {isAuthenticated && userType === "admin" && (
+          {isAuthenticated && userType === "cadmin" && (
             <Nav.Link as={Link} to="/cadmin">
+              Admin Dashboard
+            </Nav.Link>
+          )}
+          {isAuthenticated && userType === "super_admin" && (
+            <Nav.Link as={Link} to="/superadmin/SuperAdminHome">
               Admin Dashboard
             </Nav.Link>
           )}

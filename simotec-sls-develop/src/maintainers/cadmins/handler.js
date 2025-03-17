@@ -21,23 +21,37 @@ module.exports.listCadmins = async (event) => {
   
   module.exports.createCadmin = async (event) => {
     try {
-      const { name, email, password } = JSON.parse(event.body);
-      if (!name || !email || !password) {
-        return generateResponse(400, { message: "Missing required fields" });
-      }
-      const password_hash = await bcrypt.hash(password, 10);
-      return await queryWithTransaction(async (connection) => {
-        await connection.execute(
-          "INSERT INTO cadmins (name, email, password_hash, created_at) VALUES (?, ?, ?, NOW())",
-          [name, email, password_hash]
-        );
-        return generateResponse(201, { message: "Cadmin created successfully" });
-      });
+        const { email, password, nombre_empresa, nombre_supervisor, sector, superadmin_id } = JSON.parse(event.body);
+
+        if (!email || !password || !nombre_empresa || !nombre_supervisor || !sector || !superadmin_id) {
+            return generateResponse(400, { message: "Missing required fields" });
+        }
+
+        const password_hash = await bcrypt.hash(password, 10);
+
+        return await queryWithTransaction(async (connection) => {
+            // 1️⃣ Insertar en `auth_users` primero
+            const [authResult] = await connection.execute(
+                "INSERT INTO auth_users (email, password, user_type, created_at) VALUES (?, ?, 'cadmin', NOW())",
+                [email, password_hash]
+            );
+
+            const auth_user_id = authResult.insertId; // Obtener el ID generado
+
+            // 2️⃣ Insertar en `cadmins` con el auth_user_id
+            await connection.execute(
+                "INSERT INTO cadmins (auth_user_id, nombre_empresa, nombre_supervisor, sector, created_by_superadmin, created_at) VALUES (?, ?, ?, ?, ?, NOW())",
+                [auth_user_id, nombre_empresa, nombre_supervisor, sector, superadmin_id]
+            );
+
+            return generateResponse(201, { message: "Cadmin created successfully" });
+        });
+
     } catch (error) {
-      console.error("Error creating cadmin:", error);
-      return generateResponse(500, { message: error.message });
+        console.error("Error creating cadmin:", error);
+        return generateResponse(500, { message: error.message });
     }
-  };
+};
   
   module.exports.editCadmin = async (event) => {
     try {

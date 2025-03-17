@@ -18,7 +18,7 @@ const SuperAdminLogin = () => {
       { email, password, role: "super_admin" }
     );
 
-    console.log("Respuesta del backend:", response.data);
+    //console.log("Respuesta del backend:", response.data);
 
     if (response.status === 200) {
       login(response.data.token, response.data.user, response.data.role);

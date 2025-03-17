@@ -86,8 +86,9 @@ const loginHandler = async (event) => {
             await generateRefreshToken(authUser.id, connection);
 
             return generateResponse(200, { 
-                accessToken, 
+                token: accessToken, 
                 role: authUser.user_type,
+                user: authUser,
                 userId: specificUser.id,
                 authId: authUser.id
             });

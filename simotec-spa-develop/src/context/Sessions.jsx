@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
-import { Navigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
 const AuthContext = createContext();
@@ -15,58 +14,74 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userType, setUserType] = useState(null);
+  const [user, setUser] = useState(null); // ✅ Estado para almacenar el usuario
 
   // Restaurar la sesión al cargar la aplicación
   useEffect(() => {
-    const userToken = localStorage.getItem("token");
-    const storedUserType = localStorage.getItem("type");
+    try {
+      const userToken = localStorage.getItem("token");
+      const storedUserType = localStorage.getItem("type");
+      const storedUser = localStorage.getItem("user");
 
-    if (userToken && storedUserType) {
-      setIsAuthenticated(true);
-      setUserType(storedUserType);
+      if (userToken && storedUserType && storedUser) {
+        setIsAuthenticated(true);
+        setUserType(storedUserType);
+        setUser(JSON.parse(storedUser)); // ✅ Parseamos el usuario de localStorage
+      }
+    } catch (error) {
+      console.error("Error restaurando la sesión:", error);
+      logout(); // ✅ Si hay error, forzamos un logout limpio
     }
   }, []);
 
   const login = (token, user, type) => {
-    // Limpiar cualquier sesión previa
-    logout();
+    try {
+      logout(); // ✅ Limpiar sesión anterior
 
-    // Guardar datos en localStorage
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("type", type);
+      console.log("Datos recibidos en login:", { token, user, type }); // 👀 Verifica qué llega
 
-    // Actualizar estado
-    setIsAuthenticated(true);
-    setUserType(type);
+
+      // Guardar datos en localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user)); // ✅ Guardamos el usuario correctamente
+      localStorage.setItem("type", type);
+
+      // Actualizar estado
+      setIsAuthenticated(true);
+      setUserType(type);
+      setUser(user);
+    } catch (error) {
+      console.error("Error en login:", error);
+    }
   };
 
   const logout = () => {
-    // Limpiar localStorage
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("type");
+    try {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("type");
 
-    // Actualizar estado
-    setIsAuthenticated(false);
-    setUserType(null);
+      setIsAuthenticated(false);
+      setUserType(null);
+      setUser(null);
+    } catch (error) {
+      console.error("Error en logout:", error);
+    }
   };
 
-  // Verificar si el usuario tiene un rol específico
-  const hasRole = (role) => {
-    return isAuthenticated && userType === role;
-  };
+  const hasRole = (role) => isAuthenticated && userType === role;
 
-  // Memoizar el valor del contexto para optimizar rendimiento
+  // Memoizar el contexto para optimizar rendimiento
   const auth = useMemo(
     () => ({
       isAuthenticated,
       userType,
+      user, // ✅ Aseguramos que user esté en el contexto
       login,
       logout,
-      hasRole, // Añadir función para verificar roles
+      hasRole,
     }),
-    [isAuthenticated, userType]
+    [isAuthenticated, userType, user]
   );
 
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
