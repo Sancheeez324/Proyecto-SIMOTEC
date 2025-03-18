@@ -21,6 +21,12 @@ const UserList = () => {
     fetchUsers();
   }, []);
 
+  // Función para formatear la fecha (eliminar la parte de la hora)
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    return dateString.split("T")[0];
+  };
+
   const fetchUsers = async () => {
     setIsLoading(true); // Mostrar spinner al iniciar la solicitud
     setErrorMessage(""); // Limpiar cualquier error previo
@@ -53,6 +59,7 @@ const UserList = () => {
       email: "",
       password: "",
       sector: "mineria",
+      cargo: "operador"
     });
   };
 
@@ -64,6 +71,7 @@ const UserList = () => {
       email: "",
       password: "",
       sector: "mineria",
+      cargo: "operador"
     });
   };
 
@@ -72,7 +80,12 @@ const UserList = () => {
   };
 
   const handleShowEditModal = (user) => {
-    setSelectedUser(user);
+    // Asegurarse de que no haya problemas si user.fecha_nac es null o undefined
+    const userToEdit = {
+      ...user,
+      fecha_nac: user.fecha_nac ? formatDate(user.fecha_nac) : ""
+    };
+    setSelectedUser(userToEdit);
     setShowEditModal(true);
   };
 
@@ -162,7 +175,7 @@ const UserList = () => {
                 <tr key={user.id}>
                   <td>{user.rut}</td>
                   <td>{user.nombre}</td>
-                  <td>{user.fecha_nac}</td>
+                  <td>{formatDate(user.fecha_nac)}</td>
                   <td>{user.sector}</td>
                   <td>{user.cargo}</td>
                   <td>
