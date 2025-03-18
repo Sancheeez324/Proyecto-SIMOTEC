@@ -38,6 +38,7 @@ const UserList = () => {
       );
 
       if (response.status === 200) {
+        console.log("Usuarios recibidos:", response.data.users);
         setUsers(response.data.users);
       } else if (response.status === 404) {
         setErrorMessage("No users found");
@@ -159,37 +160,46 @@ const UserList = () => {
           {/* Mostrar mensaje de error si ocurre algún problema */}
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
 
-          <Table striped bordered hover>
+          <Table striped bordered hover responsive className="table-sm">
             <thead>
               <tr>
-                <th>RUT</th>
-                <th>Nombre</th>
-                <th>Fecha de Nacimiento</th>
-                <th>Sector</th>
-                <th>Cargo</th>
-                <th>Acciones</th>
+                <th style={{ width: '10%' }}>RUT</th>
+                <th style={{ width: '20%' }}>Nombre</th>
+                <th style={{ width: '15%' }}>Email</th>
+                <th style={{ width: '10%' }}>Fecha Nac.</th>
+                <th style={{ width: '10%' }}>Sector</th>
+                <th style={{ width: '10%' }}>Cargo</th>
+                <th style={{ width: '25%' }}>Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.rut}</td>
-                  <td>{user.nombre}</td>
-                  <td>{formatDate(user.fecha_nac)}</td>
-                  <td>{user.sector}</td>
-                  <td>{user.cargo}</td>
-                  <td>
-                    <Button
-                      variant="warning"
-                      className="me-2"
-                      onClick={() => handleShowEditModal(user)}
-                    >
-                      Editar
-                    </Button>
-                    <Button variant="danger">Eliminar</Button>
-                  </td>
-                </tr>
-              ))}
+              {users.map((user) => {
+                // Aquí verificamos si el primer usuario tiene un campo de email para ayudar con la depuración
+                if (user.id === users[0]?.id) {
+                  console.log("Estructura del primer usuario:", user);
+                }
+                
+                return (
+                  <tr key={user.id}>
+                    <td>{user.rut}</td>
+                    <td>{user.nombre}</td>
+                    <td>{user.email || (user.auth_user ? user.auth_user.email : '')}</td>
+                    <td>{formatDate(user.fecha_nac)}</td>
+                    <td>{user.sector}</td>
+                    <td>{user.cargo}</td>
+                    <td>
+                      <Button
+                        variant="warning"
+                        className="me-2 btn-sm"
+                        onClick={() => handleShowEditModal(user)}
+                      >
+                        Editar
+                      </Button>
+                      <Button variant="danger" className="btn-sm">Eliminar</Button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </Table>
         </>
