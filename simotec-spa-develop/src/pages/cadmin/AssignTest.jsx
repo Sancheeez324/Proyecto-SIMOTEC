@@ -1,22 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Container, Spinner, Alert } from "react-bootstrap";
-import { sendRequest } from "../../utils/axios";  // Para cargar usuarios desde la API
+import { sendRequest } from "../../utils/axios";
 
 const AssignTest = () => {
   const [users, setUsers] = useState([]);
-  const [tests, setTests] = useState([
-    { id: 1, name: "Test de Matemáticas" },
-    { id: 2, name: "Test de Lógica" },
-    // Otros tests que podemos simular
-  ]);
+  const [tests, setTests] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [selectedTest, setSelectedTest] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-
+  
   useEffect(() => {
     fetchUsers();
+    fetchTests();
   }, []);
 
   const fetchUsers = async () => {
@@ -42,6 +39,29 @@ const AssignTest = () => {
     }
   };
 
+  const fetchTests = async () => {
+    setIsLoading(true);
+    setErrorMessage("");
+
+    try {
+      // Endpoint para obtener los tests desde la base de datos
+      const response = await sendRequest(`${import.meta.env.VITE_API_URL}/tests`, "GET");
+
+      if (response.status === 200) {
+        setTests(response.data);
+      } else if (response.status === 404) {
+        setErrorMessage("No tests found");
+      } else if (response.status === 401) {
+        setErrorMessage("Unauthorized access");
+      }
+    } catch (error) {
+      setErrorMessage("An error occurred while fetching tests");
+      console.error("Error fetching tests:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleTestChange = (e) => {
     setSelectedTest(e.target.value);
   };
@@ -51,18 +71,47 @@ const AssignTest = () => {
     setSelectedUsers(selectedOptions);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setErrorMessage("");
+    setSuccessMessage("");
 
-    // Simulación del envío de la asignación de tests
-    console.log("Test seleccionado:", selectedTest);
-    console.log("Usuarios seleccionados:", selectedUsers);
+    try {
+      // Enviar la asignación a la API
+      const assignmentData = {
+        testId: selectedTest,
+        userIds: selectedUsers
+      };
 
-    // Simulación de éxito
-    setSuccessMessage("Test asignado exitosamente a los usuarios seleccionados");
-    setTimeout(() => {
-      setSuccessMessage("");
-    }, 3000);
+      const response = await sendRequest(
+        `${import.meta.env.VITE_API_URL}/tests/assign`, 
+        "POST",
+        assignmentData
+      );
+
+      if (response.status === 200 || response.status === 201) {
+        setSuccessMessage("Test asignado exitosamente a los usuarios seleccionados");
+        
+        // Limpiar selecciones después de éxito
+        setSelectedUsers([]);
+        setSelectedTest("");
+      } else {
+        setErrorMessage("Error al asignar el test");
+      }
+    } catch (error) {
+      setErrorMessage("An error occurred while assigning the test");
+      console.error("Error assigning test:", error);
+    } finally {
+      setIsLoading(false);
+      
+      // Limpiar mensaje de éxito después de 3 segundos
+      if (successMessage) {
+        setTimeout(() => {
+          setSuccessMessage("");
+        }, 3000);
+      }
+    }
   };
 
   return (
@@ -84,7 +133,7 @@ const AssignTest = () => {
                 <option value="">Seleccione un test</option>
                 {tests.map((test) => (
                   <option key={test.id} value={test.id}>
-                    {test.name}
+                    {test.test_name} ({test.sector} - {test.tipo})
                   </option>
                 ))}
               </Form.Control>
@@ -104,8 +153,15 @@ const AssignTest = () => {
               </Form.Text>
             </Form.Group>
 
-            <Button variant="primary" type="submit" disabled={!selectedTest || selectedUsers.length === 0}>
-              Asignar Test
+            <Button variant="primary" type="submit" disabled={!selectedTest || selectedUsers.length === 0 || isLoading}>
+              {isLoading ? (
+                <>
+                  <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                  <span className="ms-2">Asignando...</span>
+                </>
+              ) : (
+                "Asignar Test"
+              )}
             </Button>
           </Form>
         </>
