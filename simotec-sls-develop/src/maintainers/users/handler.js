@@ -23,6 +23,7 @@ module.exports.listUsers = async (event) => {
     return generateResponse(500, { message: "Internal Server Error" });
   }
 };
+
 module.exports.createUser = async (event) => {
   try {
     const { rut, nombre, email, password, sector, cargo, cadmin_id } = JSON.parse(event.body);
@@ -74,6 +75,7 @@ module.exports.createUser = async (event) => {
     return generateResponse(500, { message: error.message });
   }
 };
+
 module.exports.editUser = async (event) => {
   try {
     const userId = event.pathParameters.id;
@@ -105,5 +107,57 @@ module.exports.deleteUser = async (event) => {
   } catch (error) {
     console.error("Error deleting user:", error);
     return generateResponse(500, { message: "Internal Server Error" });
+  }
+};
+
+module.exports.getDashboardStats = async (event) => {
+  try {
+    // Determinar qué estadística está solicitando basado en el path
+    const path = event.path;
+    const isUserCount = path.includes('/regular-users/count');
+    const isTestCount = path.includes('/assigned-tests/count');
+    
+    // Extraer el ID del usuario autenticado del contexto de autorización
+    const authUserId = event.requestContext.authorizer.principalId; // Ajusta según cómo guardas el ID en el token
+
+    return await queryWithTransaction(async (connection) => {
+      // Obtener primero el cadmin_id
+      const [cadminResult] = await connection.execute(
+        'SELECT id FROM cadmins WHERE auth_user_id = ?',
+        [authUserId]
+      );
+      
+      if (!cadminResult || cadminResult.length === 0) {
+        return generateResponse(404, { message: 'Administrador de empresa no encontrado' });
+      }
+      
+      const cadminId = cadminResult[0].id;
+      
+      if (isUserCount) {
+        // Contar SOLO usuarios regulares que pertenecen a este cadmin
+        const [usersCount] = await connection.execute(
+          'SELECT COUNT(*) as count FROM users WHERE cadmin_id = ?',
+          [cadminId]
+        );
+        
+        return generateResponse(200, { count: usersCount[0].count });
+      } 
+      else if (isTestCount) {
+        // Contar tests asignados por este cadmin
+        const [testsCount] = await connection.execute(
+          `SELECT COUNT(*) as count FROM assigned_tests 
+           WHERE assigned_by = ?`,
+          [cadminId]
+        );
+        
+        return generateResponse(200, { count: testsCount[0].count });
+      } 
+      else {
+        return generateResponse(400, { message: 'Endpoint no reconocido' });
+      }
+    });
+  } catch (error) {
+    console.error('Error al obtener estadísticas del dashboard:', error);
+    return generateResponse(500, { message: 'Error interno del servidor', error: error.message });
   }
 };
