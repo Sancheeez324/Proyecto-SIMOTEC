@@ -28,11 +28,11 @@ const AdminDashboard = () => {
           },
         };
         
-        // Petición para obtener el conteo solo de usuarios regulares (no cadmins ni superadmins)
-        const usersResponse = await axios.get("/api/cadmin/regular-users/count", config);
+        // Rutas actualizadas para coincidir con el serverless.yml
+        const usersResponse = await axios.get("/api/dashboard/regular-users/count", config);
         
-        // Petición para obtener el conteo de tests asignados recientes
-        const testsResponse = await axios.get("/api/cadmin/assigned-tests/count", config);
+        // Ruta actualizada para tests asignados
+        const testsResponse = await axios.get("/api/dashboard/assigned-tests/count", config);
         
         setUserCount(usersResponse.data.count);
         setRecentTestsCount(testsResponse.data.count);
