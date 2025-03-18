@@ -118,7 +118,9 @@ module.exports.getDashboardStats = async (event) => {
     const isTestCount = path.includes('/assigned-tests/count');
     
     // Extraer el ID del usuario autenticado del contexto de autorización
-    const authUserId = event.requestContext.authorizer.principalId; // Ajusta según cómo guardas el ID en el token
+    const authUserId = event.requestContext.authorizer.principalId;
+    
+    console.log('Auth User ID obtenido:', authUserId);
 
     return await queryWithTransaction(async (connection) => {
       // Obtener primero el cadmin_id
@@ -127,11 +129,14 @@ module.exports.getDashboardStats = async (event) => {
         [authUserId]
       );
       
+      console.log('Resultado de la búsqueda de cadmin:', cadminResult);
+      
       if (!cadminResult || cadminResult.length === 0) {
         return generateResponse(404, { message: 'Administrador de empresa no encontrado' });
       }
       
       const cadminId = cadminResult[0].id;
+      console.log('Cadmin ID encontrado:', cadminId);
       
       if (isUserCount) {
         // Contar SOLO usuarios regulares que pertenecen a este cadmin
@@ -140,6 +145,7 @@ module.exports.getDashboardStats = async (event) => {
           [cadminId]
         );
         
+        console.log('Resultado del conteo de usuarios:', usersCount[0]);
         return generateResponse(200, { count: usersCount[0].count });
       } 
       else if (isTestCount) {
@@ -150,6 +156,7 @@ module.exports.getDashboardStats = async (event) => {
           [cadminId]
         );
         
+        console.log('Resultado del conteo de tests:', testsCount[0]);
         return generateResponse(200, { count: testsCount[0].count });
       } 
       else {
