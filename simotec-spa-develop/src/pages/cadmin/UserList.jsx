@@ -39,31 +39,57 @@ const UserList = () => {
   
       console.log("Token enviado:", token); // Depuración
   
-      const response = await sendRequest(
-        `${import.meta.env.VITE_API_URL}/users`,
-        "GET",
-        null,
-        {
+      // Realizar la solicitud al backend
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/users`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-        }
-      );
+        },
+      });
   
       console.log("Respuesta del backend:", response);
   
-      if (response.status === 200) {
-        setUsers(response.data.users);
-      } else if (response.status === 404) {
-        setErrorMessage("No se encontraron usuarios");
-      } else if (response.status === 401) {
-        setErrorMessage("No autorizado: token inválido o expirado");
-      } else if (response.status === 500) {
-        setErrorMessage("Error interno del servidor");
+      // Verificar si la respuesta es exitosa
+      if (!response.ok) {
+        const errorData = await response.json(); // Leer el cuerpo del error
+        console.error("Error del servidor:", errorData);
+  
+        if (response.status === 401) {
+          setErrorMessage("No autorizado: token inválido o expirado");
+          // Opcional: Redirigir al usuario a la página de login
+          // navigate("/login");
+        } else if (response.status === 404) {
+          setErrorMessage("No se encontraron usuarios");
+        } else if (response.status === 500) {
+          setErrorMessage("Error interno del servidor");
+        } else {
+          setErrorMessage(`Error: ${errorData.message || "Error desconocido"}`);
+        }
+        return;
+      }
+  
+      // Procesar la respuesta exitosa
+      const data = await response.json();
+      console.log("Datos recibidos:", data);
+  
+      if (data.users) {
+        setUsers(data.users); // Actualizar el estado con los usuarios
+      } else {
+        setErrorMessage("No se encontraron usuarios en la respuesta");
       }
     } catch (error) {
       console.error("Error al obtener usuarios:", error);
       setErrorMessage("Error al obtener usuarios");
+  
+      // Manejar errores de red o de la solicitud
+      if (error.name === "TypeError") {
+        setErrorMessage("No se pudo conectar al servidor");
+      } else {
+        setErrorMessage("Error desconocido");
+      }
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Detener el estado de carga
     }
   };
   const handleCloseCreateModal = () => {
