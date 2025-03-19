@@ -69,7 +69,7 @@ const Login = () => {
           <div style={{ textAlign: "center", marginBottom: "15px" }}>
             {/* Texto condicional */}
             <h3 style={{ color: "#007bff" }}>
-              {role === "cadmin" ? "Dashboard Empresa" : "Dashboard Trabajador"}
+              {role === "cadmin" ? "Empresa" : "Dashboard Trabajador"}
             </h3>
             <h4>Inicio de sesión</h4>
           </div>

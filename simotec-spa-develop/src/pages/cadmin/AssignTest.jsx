@@ -22,18 +22,19 @@ const AssignTest = () => {
 
     try {
       const user = JSON.parse(localStorage.getItem("user"));
-      const id = user.id;
-      const response = await sendRequest(`${import.meta.env.VITE_API_URL}/users/${id}`, "GET");
+      const cadminId = user.id;
+      const response = await sendRequest(
+        `${import.meta.env.VITE_API_URL}/users?cadminId=${cadminId}`,
+        "GET"
+      );
 
       if (response.status === 200) {
         setUsers(response.data.users);
-      } else if (response.status === 404) {
-        setErrorMessage("No users found");
-      } else if (response.status === 401) {
-        setErrorMessage("Unauthorized access");
+      } else {
+        setErrorMessage("No se encontraron usuarios");
       }
     } catch (error) {
-      setErrorMessage("An error occurred while fetching users");
+      setErrorMessage("Error al obtener usuarios");
     } finally {
       setIsLoading(false);
     }
@@ -44,31 +45,17 @@ const AssignTest = () => {
     setErrorMessage("");
 
     try {
-      // Endpoint para obtener los tests desde la base de datos
       const response = await sendRequest(`${import.meta.env.VITE_API_URL}/tests`, "GET");
-
       if (response.status === 200) {
         setTests(response.data);
-      } else if (response.status === 404) {
-        setErrorMessage("No tests found");
-      } else if (response.status === 401) {
-        setErrorMessage("Unauthorized access");
+      } else {
+        setErrorMessage("No se encontraron tests");
       }
     } catch (error) {
-      setErrorMessage("An error occurred while fetching tests");
-      console.error("Error fetching tests:", error);
+      setErrorMessage("Error al obtener tests");
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleTestChange = (e) => {
-    setSelectedTest(e.target.value);
-  };
-
-  const handleUserChange = (e) => {
-    const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
-    setSelectedUsers(selectedOptions);
   };
 
   const handleSubmit = async (e) => {
@@ -78,39 +65,28 @@ const AssignTest = () => {
     setSuccessMessage("");
 
     try {
-      // Enviar la asignación a la API
       const assignmentData = {
         testId: selectedTest,
-        userIds: selectedUsers
+        userIds: selectedUsers,
       };
 
       const response = await sendRequest(
-        `${import.meta.env.VITE_API_URL}/tests/assign`, 
+        `${import.meta.env.VITE_API_URL}/tests/assign`,
         "POST",
         assignmentData
       );
 
       if (response.status === 200 || response.status === 201) {
         setSuccessMessage("Test asignado exitosamente a los usuarios seleccionados");
-        
-        // Limpiar selecciones después de éxito
         setSelectedUsers([]);
         setSelectedTest("");
       } else {
         setErrorMessage("Error al asignar el test");
       }
     } catch (error) {
-      setErrorMessage("An error occurred while assigning the test");
-      console.error("Error assigning test:", error);
+      setErrorMessage("Error al asignar el test");
     } finally {
       setIsLoading(false);
-      
-      // Limpiar mensaje de éxito después de 3 segundos
-      if (successMessage) {
-        setTimeout(() => {
-          setSuccessMessage("");
-        }, 3000);
-      }
     }
   };
 
@@ -129,7 +105,7 @@ const AssignTest = () => {
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="testSelect" className="mb-3">
               <Form.Label>Seleccionar Test</Form.Label>
-              <Form.Control as="select" value={selectedTest} onChange={handleTestChange} required>
+              <Form.Control as="select" value={selectedTest} onChange={(e) => setSelectedTest(e.target.value)} required>
                 <option value="">Seleccione un test</option>
                 {tests.map((test) => (
                   <option key={test.id} value={test.id}>
@@ -141,7 +117,7 @@ const AssignTest = () => {
 
             <Form.Group controlId="userSelect" className="mb-3">
               <Form.Label>Seleccionar Usuarios</Form.Label>
-              <Form.Control as="select" multiple value={selectedUsers} onChange={handleUserChange} required>
+              <Form.Control as="select" multiple value={selectedUsers} onChange={(e) => setSelectedUsers(Array.from(e.target.selectedOptions).map(option => option.value))} required>
                 {users.map((user) => (
                   <option key={user.id} value={user.id}>
                     {user.username}
@@ -154,14 +130,7 @@ const AssignTest = () => {
             </Form.Group>
 
             <Button variant="primary" type="submit" disabled={!selectedTest || selectedUsers.length === 0 || isLoading}>
-              {isLoading ? (
-                <>
-                  <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                  <span className="ms-2">Asignando...</span>
-                </>
-              ) : (
-                "Asignar Test"
-              )}
+              {isLoading ? "Asignando..." : "Asignar Test"}
             </Button>
           </Form>
         </>
