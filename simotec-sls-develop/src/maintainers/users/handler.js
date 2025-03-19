@@ -7,9 +7,6 @@ module.exports.listUsers = async (event) => {
   try {
     console.log("🔍 Iniciando listUsers...");
 
-    console.log("🧐 Event recibido:", JSON.stringify(event, null, 2));
-
-
     // Extraer y decodificar el token del header
     const authHeader = event.headers.authorization || event.headers.Authorization;
     console.log("Header Authorization recibido:", authHeader);
@@ -33,8 +30,19 @@ module.exports.listUsers = async (event) => {
     return await queryWithTransaction(async (connection) => {
       console.log("📡 Conexión a la base de datos establecida");
 
-      // Filtrar usuarios por cadmin_id
-      const query = "SELECT * FROM users WHERE cadmin_id = ?";
+      // Obtener todos los usuarios asociados al `cadmin_id`
+      const query = `
+        SELECT 
+          id, 
+          rut, 
+          nombre, 
+          fecha_nac, 
+          sector, 
+          cargo, 
+          created_at 
+        FROM users 
+        WHERE cadmin_id = ?
+      `;
       const [users] = await connection.execute(query, [authUserId]);
 
       console.log("👥 Usuarios obtenidos:", users);
