@@ -1,32 +1,6 @@
 functions:  
-  ########################################
-  # Usuarios
-  ########################################
-  getUsers:
-    handler: src/maintainers/users/handler.listUsers
-    events:
-      - httpApi:
-          path: /users
-          method: get
-  createUser:
-    handler: src/maintainers/users/handler.createUser
-    events:
-      - httpApi:
-          path: /users
-          method: post
-  updateUser:
-    handler: src/maintainers/users/handler.updateUser
-    events:
-      - httpApi:
-          path: /users/{id}
-          method: put
-  deleteUser:
-    handler: src/maintainers/users/handler.deleteUser
-    events:
-      - httpApi:
-          path: /users/{id}
-          method: delete
-          functions:
+
+  
   ########################################
   # Usuarios
   ########################################
@@ -63,6 +37,8 @@ functions:
       - httpApi:
           path: /dashboard/assigned-tests/count
           method: get
+          
+
   ########################################
   # Cadmins
   ########################################

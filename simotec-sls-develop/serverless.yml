@@ -10,8 +10,8 @@ custom:
   # endpointType: regional
   #  certificateArn: ${env:AWS_CERTIFICATE_ARN}
 
-plugins:
-  - serverless-offline
+#plugins:
+#  - serverless-offline
 
 provider:
   name: aws

@@ -1,28 +1,58 @@
 const { queryWithTransaction } = require("../../config/database");
 const { generateResponse, getFechaChile } = require("../../utils/utils");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 module.exports.listUsers = async (event) => {
   try {
-    console.log("Iniciando listUsers..."); // Log de inicio
+    console.log("🔍 Iniciando listUsers...");
+
+    console.log("🧐 Event recibido:", JSON.stringify(event, null, 2));
+
+
+    // Extraer y decodificar el token del header
+    const authHeader = event.headers.authorization || event.headers.Authorization;
+    console.log("Header Authorization recibido:", authHeader);
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      throw new Error("Token no proporcionado");
+    }
+
+    const token = authHeader.split(" ")[1]; // Extraer el token después de "Bearer "
+    console.log("Token extraído:", token);
+
+    // Decodificar el token para obtener el ID del usuario autenticado
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded || !decoded.id) {
+      throw new Error("Token inválido");
+    }
+
+    const authUserId = decoded.id; // ID del usuario autenticado
+    console.log("✅ Usuario autenticado con ID:", authUserId);
+
     return await queryWithTransaction(async (connection) => {
-      console.log("Conexión a la base de datos establecida"); // Log de conexión
-      const query = "SELECT * FROM users"; // Seleccionar todos los usuarios
-      const [users] = await connection.execute(query);
+      console.log("📡 Conexión a la base de datos establecida");
 
-      console.log("Usuarios obtenidos:", users); // Log de usuarios obtenidos
+      // Filtrar usuarios por cadmin_id
+      const query = "SELECT * FROM users WHERE cadmin_id = ?";
+      const [users] = await connection.execute(query, [authUserId]);
 
+      console.log("👥 Usuarios obtenidos:", users);
+
+      // Formatear fecha (si es necesario)
       users.forEach((user) => {
-        user.created_at = getFechaChile(user.created_at, true); // Formatear fecha
+        user.created_at = getFechaChile(user.created_at, true);
       });
 
       return generateResponse(200, { users });
     });
   } catch (error) {
-    console.error("Error listing users:", error);
-    return generateResponse(500, { message: "Internal Server Error" });
+    console.error("❌ Error al listar usuarios:", error);
+    return generateResponse(500, { message: error.message || "Internal Server Error" });
   }
 };
+
+
 
 module.exports.createUser = async (event) => {
   try {
@@ -112,16 +142,32 @@ module.exports.deleteUser = async (event) => {
 
 module.exports.getDashboardStats = async (event) => {
   try {
+    console.log("🧐 Event recibido:", JSON.stringify(event, null, 2));
+
+    // Extraer token del header
+    const authHeader = event.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      throw new Error("Token no proporcionado");
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    // Decodificar el token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded || !decoded.id) {
+      throw new Error("Token inválido");
+    }
+
+    const authUserId = decoded.id; // ID del usuario autenticado en auth_users
+    console.log("✅ Usuario autenticado con ID:", authUserId);
+
     // Determinar qué estadística está solicitando basado en el path
-    const path = event.path;
+    const path = event.rawPath || ''; 
     const isUserCount = path.includes('/regular-users/count');
     const isTestCount = path.includes('/assigned-tests/count');
-    
-    // Extraer el ID del usuario autenticado del contexto de autorización
-    const authUserId = event.requestContext.authorizer.principalId; // Ajusta según cómo guardas el ID en el token
 
     return await queryWithTransaction(async (connection) => {
-      // Obtener primero el cadmin_id
+      // Buscar el cadmin que tenga este authUserId
       const [cadminResult] = await connection.execute(
         'SELECT id FROM cadmins WHERE auth_user_id = ?',
         [authUserId]
@@ -130,26 +176,27 @@ module.exports.getDashboardStats = async (event) => {
       if (!cadminResult || cadminResult.length === 0) {
         return generateResponse(404, { message: 'Administrador de empresa no encontrado' });
       }
-      
-      const cadminId = cadminResult[0].id;
-      
+
+      // Ahora usamos `authUserId` directamente en la consulta de usuarios
       if (isUserCount) {
-        // Contar SOLO usuarios regulares que pertenecen a este cadmin
+        // Contar usuarios regulares asociados a este cadmin (por auth_user_id)
         const [usersCount] = await connection.execute(
           'SELECT COUNT(*) as count FROM users WHERE cadmin_id = ?',
-          [cadminId]
+          [authUserId] // Aquí cambiamos cadminId por authUserId
         );
-        
+
+        console.log("🔹 usersCount:", JSON.stringify(usersCount, null, 2));
         return generateResponse(200, { count: usersCount[0].count });
       } 
       else if (isTestCount) {
-        // Contar tests asignados por este cadmin
+        // Contar tests asignados por este cadmin (por auth_user_id)
         const [testsCount] = await connection.execute(
           `SELECT COUNT(*) as count FROM assigned_tests 
            WHERE assigned_by = ?`,
-          [cadminId]
+          [authUserId] // Aquí también cambiamos cadminId por authUserId
         );
-        
+
+        console.log("🔹 testsCount:", JSON.stringify(testsCount, null, 2));
         return generateResponse(200, { count: testsCount[0].count });
       } 
       else {
@@ -157,7 +204,7 @@ module.exports.getDashboardStats = async (event) => {
       }
     });
   } catch (error) {
-    console.error('Error al obtener estadísticas del dashboard:', error);
+    console.error('❌ Error al obtener estadísticas del dashboard:', error);
     return generateResponse(500, { message: 'Error interno del servidor', error: error.message });
   }
 };
