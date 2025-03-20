@@ -89,8 +89,8 @@ const UserList = () => {
   };
 
   const handleSaveUser = async () => {
-    console.log("🚀 Botón 'Guardar Usuario' presionado.");
-    const token = localStorage.getItem("token");
+    const password = `${empresa.toLowerCase()}1#`;
+    const payload = { ...newUser, password };
 
     if (!token) {
       alert("No se encontró el token de autenticación.");
@@ -201,6 +201,9 @@ const UserList = () => {
         console.log("CSV parseado:", results.data);
       },
     });
+
+    fetchUsers();
+    setShowEditModal(false);
   };
 
   const handleCsvSubmit = async () => {
@@ -310,26 +313,8 @@ const UserList = () => {
                     <td>{user.sector}</td>
                     <td>{user.cargo}</td>
                     <td>
-                      <Button
-                        variant="success"
-                        className="me-2 btn-sm"
-                        onClick={() => {
-                          setSelectedUser(user);
-                          setShowEditModal(true);
-                        }}
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        variant="danger"
-                        className="btn-sm"
-                        onClick={() => {
-                          setSelectedUser(user);
-                          setShowDeleteModal(true);
-                        }}
-                      >
-                        Eliminar
-                      </Button>
+                      <Button variant="success" className="me-2 btn-sm" onClick={() => { setSelectedUser(user); setShowEditModal(true); }}>Editar</Button>
+                      <Button variant="danger" className="btn-sm" onClick={() => { setSelectedUser(user); setShowDeleteModal(true); }}>Eliminar</Button>
                     </td>
                   </tr>
                 ))}
@@ -513,46 +498,39 @@ const UserList = () => {
         <div className="green-bar"></div>
       </div>
 
-      <style jsx>{`
-        .header {
-          display: flex;
-          align-items: center;
-          padding: 10px 20px;
-        }
-
-        .logo-container {
-          display: flex;
-          align-items: flex-start;
-        }
-
-        .logo-simotec {
-          width: 70px;
           height: auto;
-        }
-
-        .footer {
-          width: 100%;
-          position: relative;
-          bottom: 0;
           text-align: center;
-          margin-top: auto;
-        }
-
-        .ecos-logo {
-          margin-bottom: 5px;
-        }
-
         .footer-logo {
-          height: 30px;
-          width: auto;
-        }
+  .logo-container {
+    align-items: flex-start;
+  }
 
-        .green-bar {
-          background-color: #7ed957;
-          height: 40px;
-          width: 100%;
-        }
-      `}</style>
+  .logo-simotec {
+    width: 70px; /* tamaño correcto para el logo */
+    height: auto;
+  }
+
+  .footer {
+    width: 100%;
+    position: relative;
+    bottom: 0;
+    text-align: center;
+    margin-top: auto;
+
+  .ecos-logo {
+    margin-bottom: 5px;
+  }
+
+  .footer-logo {
+    height: 30px;
+    width: auto;
+  }
+
+  .green-bar {
+    background-color: #7ed957;
+    width: 100%;
+  }
+`}</style>
     </div>
   );
 };
