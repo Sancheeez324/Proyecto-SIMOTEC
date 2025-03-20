@@ -1,6 +1,5 @@
-const AWS = require("aws-sdk");
-AWS.config.update({ region: "us-east-2" }); // Configuramos la región en us-east-2
-const SES = new AWS.SES();
+const { S3Client } = require("@aws-sdk/client-s3");
+const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
 
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -8,13 +7,13 @@ const jwt = require("jsonwebtoken");
 const { queryWithTransaction } = require("../../config/database");
 const { generateResponse, getFechaChile } = require("../../utils/utils");
 
+// Configurar SES correctamente
+const sesClient = new SESClient({ region: "us-east-2" });
+
 // Función auxiliar para enviar correo usando AWS SES
 const sendWelcomeEmail = async (to, password, name = "Usuario") => {
   const params = {
-    Source: "pablo.sanchez.m2002@gmail.com", // Reemplaza con tu correo verificado en SES
-    Destination: {
-      ToAddresses: [to],
-    },
+    Destination: { ToAddresses: [to] },
     Message: {
       Subject: { Data: "Bienvenido a Simotec" },
       Body: {
@@ -28,10 +27,15 @@ const sendWelcomeEmail = async (to, password, name = "Usuario") => {
         },
       },
     },
+    Source: "pablo.sanchez.m2002@gmail.com", // Reemplaza con tu correo verificado en SES
   };
 
-  const result = await SES.sendEmail(params).promise();
-  console.log("Correo enviado. MessageId:", result.MessageId);
+  try {
+    const result = await sesClient.send(new SendEmailCommand(params));
+    console.log("Correo enviado. MessageId:", result.MessageId);
+  } catch (error) {
+    console.error("Error al enviar correo:", error);
+  }
 };
 
 // Handler para crear usuario y enviar correo
@@ -104,7 +108,9 @@ module.exports.listUsers = async (event) => {
     if (!decoded || !decoded.id) {
       throw new Error("Token inválido");
     }
-    const cadminId = decoded.id;
+    const cadminId = decoded.authId;
+
+    console.log("Consultando usuarios con cadmin_id =", cadminId);
 
     return await queryWithTransaction(async (connection) => {
       console.log("📡 Conexión a la base de datos establecida");
@@ -128,6 +134,8 @@ module.exports.listUsers = async (event) => {
       });
 
       console.log("👥 Usuarios obtenidos:", rows);
+
+
       return generateResponse(200, { users: rows });
     });
   } catch (error) {
@@ -270,7 +278,7 @@ module.exports.getDashboardStats = async (event) => {
         return generateResponse(401, { message: "Token inválido" });
       }
       
-      const cadminId = decoded.id;
+      const cadminId = decoded.authId;
       
       // Obtener la ruta para determinar qué acción realizar
       const path = event.path || event.rawPath || '';

@@ -59,6 +59,8 @@ const UserList = () => {
       }
 
       const data = await response.json();
+      console.log("Usuarios obtenidos desde el backend:", data.users); // 🔥 Log de los usuarios obtenidos
+
       setUsers(data.users || []);
     } catch (error) {
       setErrorMessage("Error al obtener usuarios");
