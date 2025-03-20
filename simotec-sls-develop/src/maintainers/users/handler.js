@@ -24,7 +24,8 @@ module.exports.listUsers = async (event) => {
       throw new Error("Token inválido");
     }
 
-    const authUserId = decoded.id; // ID del usuario autenticado
+    const authUserId = decoded.authId; // ✅ BIEN
+
     console.log("✅ Usuario autenticado con ID:", authUserId);
 
     return await queryWithTransaction(async (connection) => {
@@ -166,7 +167,8 @@ module.exports.getDashboardStats = async (event) => {
       throw new Error("Token inválido");
     }
 
-    const authUserId = decoded.id; // ID del usuario autenticado en auth_users
+    const authUserId = decoded.authId; // ✅ BIEN
+ // ID del usuario autenticado en auth_users
     console.log("✅ Usuario autenticado con ID:", authUserId);
 
     // Determinar qué estadística está solicitando basado en el path
