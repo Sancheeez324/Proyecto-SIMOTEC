@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Button, Row, Col, Container } from "react-bootstrap";
+import { Card, Button, Row, Col, Container, Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 // Importar los logos
@@ -8,29 +8,55 @@ import logoEcos from "../../fotos/Icon2SinFondo.png";
 
 const AdminDashboard = () => {
   const [userCount, setUserCount] = useState(0);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserCount = async () => {
+      setLoading(true);
+      setError(null);
       try {
+        // Obtener token del localStorage
+        const token = localStorage.getItem("token");
+        
+        if (!token) {
+          throw new Error("No se encontró token de autenticación");
+        }
+
+        console.log("Iniciando petición a la API...");
         const response = await fetch(
           "https://zv58zspkli.execute-api.us-east-2.amazonaws.com/dashboard/regular-users/count",
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
 
+        console.log("Respuesta del servidor:", response.status);
+
         if (!response.ok) {
-          throw new Error("Error al obtener el conteo de usuarios");
+          // Obtener más detalles de la respuesta
+          const errorText = await response.text();
+          console.error("Respuesta de error:", errorText);
+          
+          if (response.status === 401 || response.status === 403) {
+            throw new Error("Error de autenticación. Inicie sesión nuevamente.");
+          } else {
+            throw new Error(`Error del servidor: ${response.status} ${response.statusText}`);
+          }
         }
 
         const data = await response.json();
+        console.log("Datos recibidos:", data);
         setUserCount(data.count);
       } catch (error) {
-        console.error("Error obteniendo el conteo de usuarios:", error);
+        console.error("Error detallado:", error);
+        setError(error.message || "Error desconocido al obtener usuarios");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -49,13 +75,26 @@ const AdminDashboard = () => {
       {/* Contenido Principal */}
       <Container className="mt-5 flex-grow-1">
         <h1 className="mb-4 text-center">Dashboard Empresa</h1>
+        
+        {error && (
+          <Alert variant="danger" className="mb-4">
+            {error}. Por favor, verifique su conexión e intente nuevamente.
+          </Alert>
+        )}
+        
         <Row className="mb-4">
           <Col md={4}>
             <Card>
               <Card.Body>
                 <Card.Title>Usuarios Registrados</Card.Title>
                 <Card.Text>
-                  Total de usuarios: <strong>{userCount}</strong>
+                  {loading ? (
+                    "Cargando datos..."
+                  ) : error ? (
+                    "Error al cargar usuarios"
+                  ) : (
+                    <>Total de usuarios: <strong>{userCount}</strong></>
+                  )}
                 </Card.Text>
                 <Button as={Link} to="/cadmin/users" variant="primary">
                   Gestionar Usuarios

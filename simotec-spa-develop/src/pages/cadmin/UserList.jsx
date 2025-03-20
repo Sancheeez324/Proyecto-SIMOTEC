@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Spinner, Alert, Modal, Form } from "react-bootstrap";
+<<<<<<< HEAD
 import Papa from "papaparse";
+=======
+>>>>>>> parent of 2eb13f7 (Cambios)
 import logoSimotec from "../../fotos/IconSinFondo.png";
 import logoEcos from "../../fotos/Icon2SinFondo.png";
 
@@ -8,6 +11,7 @@ const UserList = () => {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+<<<<<<< HEAD
 
   // Modals
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -19,6 +23,12 @@ const UserList = () => {
   const [selectedUser, setSelectedUser] = useState({});
 
   // Nuevo usuario
+=======
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState({});
+>>>>>>> parent of 2eb13f7 (Cambios)
   const [newUser, setNewUser] = useState({
     nombre: "",
     rut: "",
@@ -28,9 +38,12 @@ const UserList = () => {
     cargo: "operador",
   });
 
+<<<<<<< HEAD
   const [csvData, setCsvData] = useState([]);
 
   // Nombre de la empresa
+=======
+>>>>>>> parent of 2eb13f7 (Cambios)
   const empresa = JSON.parse(localStorage.getItem("user"))?.nombre_empresa || "empresa";
 
   // Al montar, cargamos la lista
@@ -79,9 +92,12 @@ const UserList = () => {
     }
   };
 
+<<<<<<< HEAD
   // -------------------------------------------------
   // 2) Registrar Usuario
   // -------------------------------------------------
+=======
+>>>>>>> parent of 2eb13f7 (Cambios)
   const handleShowCreateModal = () => setShowCreateModal(true);
   const handleCloseCreateModal = () => setShowCreateModal(false);
 
@@ -89,6 +105,7 @@ const UserList = () => {
     setNewUser({ ...newUser, [e.target.name]: e.target.value });
   };
 
+<<<<<<< HEAD
   const handleSaveUser = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -201,9 +218,34 @@ const UserList = () => {
         setCsvData(results.data);
         console.log("CSV parseado:", results.data);
       },
-    });
+=======
+  const handleEditChange = (e) => {
+    setSelectedUser({ ...selectedUser, [e.target.name]: e.target.value });
   };
 
+  const handleSaveUser = async () => {
+    const password = `${empresa.toLowerCase()}1#`;
+    const payload = { ...newUser, password };
+
+    console.log("Usuario a guardar:", payload);
+    handleCloseCreateModal();
+  };
+
+  const handleUpdateUser = async () => {
+    const token = localStorage.getItem("token");
+
+    await fetch(`${import.meta.env.VITE_API_URL}/users/${selectedUser.id}`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify(selectedUser),
+>>>>>>> parent of 2eb13f7 (Cambios)
+    });
+
+    fetchUsers();
+    setShowEditModal(false);
+  };
+
+<<<<<<< HEAD
   const handleCsvSubmit = async () => {
     if (!csvData.length) {
       alert("No hay datos en el CSV para procesar.");
@@ -258,6 +300,20 @@ const UserList = () => {
   };
 
   // Render
+=======
+  const handleDeleteUser = async () => {
+    const token = localStorage.getItem("token");
+
+    await fetch(`${import.meta.env.VITE_API_URL}/users/${selectedUser.id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    fetchUsers();
+    setShowDeleteModal(false);
+  };
+
+>>>>>>> parent of 2eb13f7 (Cambios)
   return (
     <div className="d-flex flex-column min-vh-100">
       {/* Encabezado */}
@@ -269,6 +325,7 @@ const UserList = () => {
 
       <div className="container mt-5 flex-grow-1">
         <h1 className="mb-4">Gestión de Usuarios</h1>
+<<<<<<< HEAD
         <Button variant="primary" className="mb-4 me-2" onClick={handleShowCreateModal}>
           Registrar Nuevo Usuario
         </Button>
@@ -277,6 +334,12 @@ const UserList = () => {
           Cargar CSV
         </Button>
 
+=======
+        <Button variant="primary" className="mb-4" onClick={handleShowCreateModal}>
+          Registrar Nuevo Usuario
+        </Button>
+
+>>>>>>> parent of 2eb13f7 (Cambios)
         {isLoading ? (
           <div className="d-flex justify-content-center">
             <Spinner animation="border" />
@@ -304,26 +367,8 @@ const UserList = () => {
                     <td>{user.sector}</td>
                     <td>{user.cargo}</td>
                     <td>
-                      <Button
-                        variant="success"
-                        className="me-2 btn-sm"
-                        onClick={() => {
-                          setSelectedUser(user);
-                          setShowEditModal(true);
-                        }}
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        variant="danger"
-                        className="btn-sm"
-                        onClick={() => {
-                          setSelectedUser(user);
-                          setShowDeleteModal(true);
-                        }}
-                      >
-                        Eliminar
-                      </Button>
+                      <Button variant="success" className="me-2 btn-sm" onClick={() => { setSelectedUser(user); setShowEditModal(true); }}>Editar</Button>
+                      <Button variant="danger" className="btn-sm" onClick={() => { setSelectedUser(user); setShowDeleteModal(true); }}>Eliminar</Button>
                     </td>
                   </tr>
                 ))}
@@ -333,6 +378,7 @@ const UserList = () => {
         )}
       </div>
 
+<<<<<<< HEAD
       {/* Modal de Registro */}
       <Modal show={showCreateModal} onHide={handleCloseCreateModal}>
         <Modal.Header closeButton>
@@ -462,12 +508,15 @@ const UserList = () => {
       </Modal>
 
       {/* Modal de Eliminación */}
+=======
+>>>>>>> parent of 2eb13f7 (Cambios)
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Confirmar Eliminación</Modal.Title>
         </Modal.Header>
         <Modal.Body>¿Estás seguro de realizar esta acción?</Modal.Body>
         <Modal.Footer>
+<<<<<<< HEAD
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
             Cancelar
           </Button>
@@ -541,6 +590,60 @@ const UserList = () => {
           width: 100%;
         }
       `}</style>
+=======
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>Cancelar</Button>
+          <Button variant="danger" onClick={handleDeleteUser}>Continuar</Button>
+        </Modal.Footer>
+      </Modal>
+              {/* Footer con logo ECOS */}
+<div className="footer">
+  <div className="ecos-logo">
+    <img src={logoEcos} alt="Ecos Logo" className="footer-logo" />
+  </div>
+  <div className="green-bar"></div>
+</div>
+
+<style jsx>{`
+  .header {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+  }
+
+  .logo-container {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .logo-simotec {
+    width: 70px; /* tamaño correcto para el logo */
+    height: auto;
+  }
+
+  .footer {
+    width: 100%;
+    position: relative;
+    bottom: 0;
+    text-align: center;
+    margin-top: auto;
+  }
+
+  .ecos-logo {
+    margin-bottom: 5px;
+  }
+
+  .footer-logo {
+    height: 30px;
+    width: auto;
+  }
+
+  .green-bar {
+    background-color: #7ed957;
+    height: 40px;
+    width: 100%;
+  }
+`}</style>
+>>>>>>> parent of 2eb13f7 (Cambios)
     </div>
   );
 };
