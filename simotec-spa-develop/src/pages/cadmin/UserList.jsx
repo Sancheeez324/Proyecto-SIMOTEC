@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Spinner, Alert, Modal, Form } from "react-bootstrap";
-import Papa from "papaparse"; // Solo si usas CSV
+import Papa from "papaparse";
 import logoSimotec from "../../fotos/IconSinFondo.png";
 import logoEcos from "../../fotos/Icon2SinFondo.png";
 
@@ -9,16 +9,16 @@ const UserList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Estados para los modals
+  // Modals
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showCsvModal, setShowCsvModal] = useState(false); // Solo si usas CSV
+  const [showCsvModal, setShowCsvModal] = useState(false);
 
-  // Usuario seleccionado (para editar o eliminar)
+  // Usuario seleccionado
   const [selectedUser, setSelectedUser] = useState({});
 
-  // Nuevo usuario (registro individual)
+  // Nuevo usuario
   const [newUser, setNewUser] = useState({
     nombre: "",
     rut: "",
@@ -28,20 +28,19 @@ const UserList = () => {
     cargo: "operador",
   });
 
-  // Datos parseados del CSV (si usas CSV)
   const [csvData, setCsvData] = useState([]);
 
-  // Nombre de la empresa (para generar contraseña)
+  // Nombre de la empresa
   const empresa = JSON.parse(localStorage.getItem("user"))?.nombre_empresa || "empresa";
 
-  // Al montar el componente, cargamos la lista de usuarios
+  // Al montar, cargamos la lista
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  // ----------------------------------------------------------------
+  // -------------------------------------------------
   // 1) Cargar Lista de Usuarios
-  // ----------------------------------------------------------------
+  // -------------------------------------------------
   const fetchUsers = async () => {
     setIsLoading(true);
     setErrorMessage("");
@@ -54,8 +53,9 @@ const UserList = () => {
       }
 
       const userData = JSON.parse(localStorage.getItem("user"));
-      const cadminId = userData?.id;
+      const cadminId = userData?.id;  // ID del cadmin
 
+      // Llamamos al endpoint
       const response = await fetch(`${import.meta.env.VITE_API_URL}/users?cadminId=${cadminId}`, {
         method: "GET",
         headers: {
@@ -73,14 +73,15 @@ const UserList = () => {
       setUsers(data.users || []);
     } catch (error) {
       setErrorMessage("Error al obtener usuarios");
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // ----------------------------------------------------------------
-  // 2) Registrar Usuario (Modal de Registro Individual)
-  // ----------------------------------------------------------------
+  // -------------------------------------------------
+  // 2) Registrar Usuario
+  // -------------------------------------------------
   const handleShowCreateModal = () => setShowCreateModal(true);
   const handleCloseCreateModal = () => setShowCreateModal(false);
 
@@ -89,19 +90,22 @@ const UserList = () => {
   };
 
   const handleSaveUser = async () => {
-    console.log("🚀 Botón 'Guardar Usuario' presionado.");
     const token = localStorage.getItem("token");
-
     if (!token) {
       alert("No se encontró el token de autenticación.");
       return;
     }
 
     try {
-      const generatedPassword = `${empresa.toLowerCase()}1#`;
-      const payload = { ...newUser, password: generatedPassword };
+      const userData = JSON.parse(localStorage.getItem("user"));
+      const cadminId = userData?.id;
 
-      console.log("📤 Enviando usuario a la API:", payload);
+      const generatedPassword = `${empresa.toLowerCase()}1#`;
+      const payload = { 
+        ...newUser,
+        password: generatedPassword,
+        cadmin_id: cadminId
+      };
 
       const response = await fetch(`${import.meta.env.VITE_API_URL}/users`, {
         method: "POST",
@@ -112,24 +116,22 @@ const UserList = () => {
         body: JSON.stringify(payload),
       });
 
-      console.log("🔎 Respuesta de la API:", response);
-
       if (!response.ok) {
-        throw new Error(`❌ Error al registrar el usuario. Status: ${response.status}`);
+        throw new Error(`Error al registrar el usuario. Status: ${response.status}`);
       }
 
       alert(`Usuario registrado correctamente! Se ha enviado la contraseña: ${generatedPassword}`);
       handleCloseCreateModal();
       fetchUsers();
     } catch (error) {
-      console.error("❌ Error en el registro:", error);
+      console.error("Error en el registro:", error);
       alert("Hubo un error al registrar el usuario.");
     }
   };
 
-  // ----------------------------------------------------------------
-  // 3) Eliminar Usuario (Modal de Eliminación)
-  // ----------------------------------------------------------------
+  // -------------------------------------------------
+  // 3) Eliminar Usuario
+  // -------------------------------------------------
   const handleDeleteUser = async () => {
     const token = localStorage.getItem("token");
 
@@ -142,9 +144,9 @@ const UserList = () => {
     setShowDeleteModal(false);
   };
 
-  // ----------------------------------------------------------------
-  // 4) Editar Usuario (Modal de Edición)
-  // ----------------------------------------------------------------
+  // -------------------------------------------------
+  // 4) Editar Usuario
+  // -------------------------------------------------
   const handleEditChange = (e) => {
     setSelectedUser({ ...selectedUser, [e.target.name]: e.target.value });
   };
@@ -157,7 +159,6 @@ const UserList = () => {
     }
 
     try {
-      // Hacemos PUT a /users/:id con los nuevos datos
       const response = await fetch(`${import.meta.env.VITE_API_URL}/users/${selectedUser.id}`, {
         method: "PUT",
         headers: {
@@ -180,9 +181,9 @@ const UserList = () => {
     }
   };
 
-  // ----------------------------------------------------------------
-  // 5) Cargar CSV de Usuarios (si usas CSV)
-  // ----------------------------------------------------------------
+  // -------------------------------------------------
+  // 5) Cargar CSV
+  // -------------------------------------------------
   const handleShowCsvModal = () => setShowCsvModal(true);
   const handleCloseCsvModal = () => {
     setShowCsvModal(false);
@@ -228,6 +229,7 @@ const UserList = () => {
           sector: row.sector || "mineria",
           cargo: row.cargo || "operador",
           password: generatedPassword,
+          cadmin_id: JSON.parse(localStorage.getItem("user"))?.id,
         };
 
         console.log(`Creando usuario de la fila ${i + 1}:`, payload);
@@ -242,7 +244,7 @@ const UserList = () => {
         });
 
         if (!response.ok) {
-          console.error(`❌ Error creando usuario en la fila ${i + 1}:`, response.status);
+          console.error(`Error creando usuario en la fila ${i + 1}:`, response.status);
         }
       }
 
@@ -255,9 +257,7 @@ const UserList = () => {
     }
   };
 
-  // ----------------------------------------------------------------
-  // Render del componente
-  // ----------------------------------------------------------------
+  // Render
   return (
     <div className="d-flex flex-column min-vh-100">
       {/* Encabezado */}
@@ -267,21 +267,16 @@ const UserList = () => {
         </div>
       </header>
 
-      {/* Contenido Principal */}
       <div className="container mt-5 flex-grow-1">
         <h1 className="mb-4">Gestión de Usuarios</h1>
-
-        {/* Botón para Registrar un Usuario (individual) */}
         <Button variant="primary" className="mb-4 me-2" onClick={handleShowCreateModal}>
           Registrar Nuevo Usuario
         </Button>
 
-        {/* Botón para Subir CSV (si usas CSV) */}
         <Button variant="success" className="mb-4" onClick={handleShowCsvModal}>
           Cargar CSV
         </Button>
 
-        {/* Spinner y Mensajes de Error */}
         {isLoading ? (
           <div className="d-flex justify-content-center">
             <Spinner animation="border" />
@@ -289,7 +284,6 @@ const UserList = () => {
         ) : (
           <>
             {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-            {/* Tabla de Usuarios */}
             <Table striped bordered hover responsive className="table-sm">
               <thead>
                 <tr>
@@ -339,7 +333,7 @@ const UserList = () => {
         )}
       </div>
 
-      {/* Modal de Registro Individual */}
+      {/* Modal de Registro */}
       <Modal show={showCreateModal} onHide={handleCloseCreateModal}>
         <Modal.Header closeButton>
           <Modal.Title>Registrar Nuevo Usuario</Modal.Title>
@@ -483,7 +477,7 @@ const UserList = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* Modal para Subir CSV (si usas CSV) */}
+      {/* Modal CSV */}
       <Modal show={showCsvModal} onHide={handleCloseCsvModal}>
         <Modal.Header closeButton>
           <Modal.Title>Subir CSV de Usuarios</Modal.Title>
@@ -519,17 +513,14 @@ const UserList = () => {
           align-items: center;
           padding: 10px 20px;
         }
-
         .logo-container {
           display: flex;
           align-items: flex-start;
         }
-
         .logo-simotec {
           width: 70px;
           height: auto;
         }
-
         .footer {
           width: 100%;
           position: relative;
@@ -537,16 +528,13 @@ const UserList = () => {
           text-align: center;
           margin-top: auto;
         }
-
         .ecos-logo {
           margin-bottom: 5px;
         }
-
         .footer-logo {
           height: 30px;
           width: auto;
         }
-
         .green-bar {
           background-color: #7ed957;
           height: 40px;

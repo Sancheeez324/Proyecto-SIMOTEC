@@ -34,7 +34,7 @@ const sendWelcomeEmail = async (to, password, name = "Usuario") => {
   console.log("Correo enviado. MessageId:", result.MessageId);
 };
 
-// Función para crear usuario y enviar correo
+// Handler para crear usuario y enviar correo
 module.exports.createUser = async (event) => {
   try {
     console.log("🔍 Iniciando createUser...");
@@ -52,7 +52,7 @@ module.exports.createUser = async (event) => {
     // cadmin_id es el id del administrador que crea al usuario
     const cadminId = decoded.id;
 
-    // Extraer campos del request
+    // Extraer campos del request body
     const { nombre, rut, fecha_nac, sector, cargo, email, password } = JSON.parse(event.body);
     if (!nombre || !rut || !email || !password) {
       return generateResponse(400, { message: "Missing required fields" });
@@ -63,9 +63,9 @@ module.exports.createUser = async (event) => {
 
     return await queryWithTransaction(async (connection) => {
       // Insertar en la tabla auth_users
+      // Usamos la columna "password" y asignamos el user_type como 'user'
       const [resultAuth] = await connection.execute(
-        `INSERT INTO auth_users (email, password_hash, created_at) 
-         VALUES (?, ?, NOW())`,
+        `INSERT INTO auth_users (email, password, user_type, created_at) VALUES (?, ?, 'user', NOW())`,
         [email, password_hash]
       );
 
@@ -89,7 +89,7 @@ module.exports.createUser = async (event) => {
   }
 };
 
-// Función para listar usuarios (ya la tienes)
+// Handler para listar usuarios (filtrando por cadmin_id)
 module.exports.listUsers = async (event) => {
   try {
     console.log("🔍 Iniciando listUsers...");
@@ -104,7 +104,7 @@ module.exports.listUsers = async (event) => {
     if (!decoded || !decoded.id) {
       throw new Error("Token inválido");
     }
-    const authUserId = decoded.id;
+    const cadminId = decoded.id;
 
     return await queryWithTransaction(async (connection) => {
       console.log("📡 Conexión a la base de datos establecida");
@@ -122,14 +122,13 @@ module.exports.listUsers = async (event) => {
         JOIN auth_users ON users.auth_user_id = auth_users.id
         WHERE users.cadmin_id = ?
       `;
-      const [users] = await connection.execute(query, [authUserId]);
-
-      console.log("👥 Usuarios obtenidos con email:", users);
-      users.forEach((user) => {
+      const [rows] = await connection.execute(query, [cadminId]);
+      rows.forEach((user) => {
         user.created_at = getFechaChile(user.created_at, true);
       });
 
-      return generateResponse(200, { users });
+      console.log("👥 Usuarios obtenidos:", rows);
+      return generateResponse(200, { users: rows });
     });
   } catch (error) {
     console.error("❌ Error al listar usuarios:", error);
