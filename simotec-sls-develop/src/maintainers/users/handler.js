@@ -1,38 +1,34 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
-
+const nodemailer = require("nodemailer");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const { queryWithTransaction } = require("../../config/database");
 const { generateResponse, getFechaChile } = require("../../utils/utils");
 
-// Configurar SES correctamente
-const sesClient = new SESClient({ region: "us-east-2" });
+// Configurar el transporte de NodeMailer usando Gmail (modifica según tus credenciales)
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "pablo.sanchez.m2002@gmail.com", // Tu correo verificado
+    pass: "TU_CONTRASEÑA_DE_APLICACIÓN",      // Contraseña de aplicación de Gmail
+  },
+});
 
-// Función auxiliar para enviar correo usando AWS SES
+// Función auxiliar para enviar correo usando NodeMailer
 const sendWelcomeEmail = async (to, password, name = "Usuario") => {
-  const params = {
-    Destination: { ToAddresses: [to] },
-    Message: {
-      Subject: { Data: "Bienvenido a Simotec" },
-      Body: {
-        Text: {
-          Data: `Hola ${name},\n\nBienvenido a Simotec. Tu contraseña es: ${password}\n\nSaludos.`,
-        },
-        Html: {
-          Data: `<p>Hola <strong>${name}</strong>,</p>
-                 <p>Bienvenido a Simotec. Tu contraseña es: <strong>${password}</strong></p>
-                 <p>Saludos.</p>`,
-        },
-      },
-    },
-    Source: "pablo.sanchez.m2002@gmail.com", // Reemplaza con tu correo verificado en SES
+  const mailOptions = {
+    from: '"Simotec" <pablo.sanchez.m2002@gmail.com>',
+    to: to,
+    subject: "Bienvenido a Simotec",
+    text: `Hola ${name},\n\nBienvenido a Simotec. Tu contraseña es: ${password}\n\nSaludos.`,
+    html: `<p>Hola <strong>${name}</strong>,</p>
+           <p>Bienvenido a Simotec. Tu contraseña es: <strong>${password}</strong></p>
+           <p>Saludos.</p>`,
   };
 
   try {
-    const result = await sesClient.send(new SendEmailCommand(params));
-    console.log("Correo enviado. MessageId:", result.MessageId);
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Correo enviado. MessageId:", info.messageId);
   } catch (error) {
     console.error("Error al enviar correo:", error);
   }
@@ -53,7 +49,7 @@ module.exports.createUser = async (event) => {
     if (!decoded || !decoded.id) {
       throw new Error("Token inválido");
     }
-    // cadmin_id es el id del administrador que crea al usuario
+    // cadmin_id es el id del administrador que crea al usuario (usar decoded.authId según la lógica de tu app)
     const cadminId = decoded.authId;
 
     // Extraer campos del request body
@@ -67,7 +63,6 @@ module.exports.createUser = async (event) => {
 
     return await queryWithTransaction(async (connection) => {
       // Insertar en la tabla auth_users
-      // Usamos la columna "password" y asignamos el user_type como 'user'
       const [resultAuth] = await connection.execute(
         `INSERT INTO auth_users (email, password, user_type, created_at) VALUES (?, ?, 'user', NOW())`,
         [email, password_hash]
@@ -134,7 +129,6 @@ module.exports.listUsers = async (event) => {
       });
 
       console.log("👥 Usuarios obtenidos:", rows);
-
 
       return generateResponse(200, { users: rows });
     });
@@ -230,7 +224,7 @@ module.exports.deleteUser = async (event) => {
     
     // Obtener el ID del usuario a eliminar desde los path parameters
     const userId = event.pathParameters.id;
-    console.log("Ids del usuario a eliminar ", userId, "y ",decoded.authId);
+    console.log("Ids del usuario a eliminar ", userId, "y ", decoded.authId);
     return await queryWithTransaction(async (connection) => {
       // Primero verificamos que el usuario pertenezca al cadmin actual y obtenemos su auth_user_id
       const [userCheck] = await connection.execute(
@@ -263,7 +257,7 @@ module.exports.deleteUser = async (event) => {
 module.exports.getDashboardStats = async (event) => {
   try {
     console.log("🔍 Iniciando getDashboardStats...");
-    console.log("Path: ", event.path || event.rawPath); // Verificar qué endpoint se está llamando
+    console.log("Path: ", event.path || event.rawPath);
 
     // Validar y decodificar token
     const authHeader = event.headers.authorization || event.headers.Authorization;
@@ -284,7 +278,6 @@ module.exports.getDashboardStats = async (event) => {
       // Obtener la ruta para determinar qué acción realizar
       const path = event.path || event.rawPath || '';
 
-      // Determinar qué tipo de estadística se solicita basado en la ruta
       if (path.includes('/dashboard/regular-users/count')) {
         return await queryWithTransaction(async (connection) => {
           console.log("📡 Contando usuarios regulares para cadmin_id:", cadminId);
@@ -304,7 +297,6 @@ module.exports.getDashboardStats = async (event) => {
       else if (path.includes('/dashboard/assigned-tests/count')) {
         return await queryWithTransaction(async (connection) => {
           console.log("📡 Contando tests asignados para cadmin_id:", cadminId);
-          // Ajusta esta consulta según tu estructura de base de datos para tests asignados
           const query = `
             SELECT COUNT(*) as count
             FROM users_tests 
