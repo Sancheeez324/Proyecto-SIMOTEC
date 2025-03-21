@@ -168,25 +168,31 @@ const UserList = () => {
   // -------------------------------------------------
   const handleDeleteUser = async () => {
     const token = localStorage.getItem("token");
-
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/users/${selectedUser.id}`,
         {
           method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
-      if (response.ok) {
-        fetchUsers();
-        handleCloseDeleteModal();
-      } else {
-        console.error("Error al eliminar usuario");
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error al eliminar usuario:", errorData.message);
+        alert("Error al eliminar usuario: " + errorData.message);
+        return;
       }
+      // Si la eliminación es exitosa, actualizamos la lista y cerramos el modal
+      fetchUsers();
+      setShowDeleteModal(false);
     } catch (error) {
-      console.error(error);
+      console.error("Error en la petición:", error);
+      alert("Error al eliminar usuario, intente nuevamente.");
     }
-  };
+  };  
 
   // -------------------------------------------------
   // Manejo de carga masiva por CSV
