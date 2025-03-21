@@ -54,7 +54,7 @@ module.exports.createUser = async (event) => {
       throw new Error("Token inválido");
     }
     // cadmin_id es el id del administrador que crea al usuario
-    const cadminId = decoded.id;
+    const cadminId = decoded.authId;
 
     // Extraer campos del request body
     const { nombre, rut, fecha_nac, sector, cargo, email, password } = JSON.parse(event.body);
@@ -223,18 +223,19 @@ module.exports.deleteUser = async (event) => {
     
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
     if (!decoded || !decoded.id) {
       return generateResponse(401, { message: "Token inválido" });
     }
     
     // Obtener el ID del usuario a eliminar desde los path parameters
     const userId = event.pathParameters.id;
-    
+    console.log("Ids del usuario a eliminar ", userId, "y ",decoded.authId);
     return await queryWithTransaction(async (connection) => {
       // Primero verificamos que el usuario pertenezca al cadmin actual y obtenemos su auth_user_id
       const [userCheck] = await connection.execute(
         `SELECT auth_user_id FROM users WHERE id = ? AND cadmin_id = ?`,
-        [userId, decoded.id]
+        [userId, decoded.authId]
       );
       
       if (userCheck.length === 0) {

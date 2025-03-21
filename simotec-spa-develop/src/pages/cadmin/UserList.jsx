@@ -110,6 +110,7 @@ const UserList = () => {
     }
     // Generar contraseña: nombre_empresa en minúsculas, sin espacios, + "1#"
     const password = `${newUser.nombre_empresa.toLowerCase().replace(/\s/g, "")}1#`;
+    console.log(password);
     const payload = { ...newUser, password };
 
     try {
