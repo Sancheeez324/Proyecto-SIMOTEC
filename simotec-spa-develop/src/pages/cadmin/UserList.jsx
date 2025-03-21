@@ -255,6 +255,7 @@ const UserList = () => {
           </Button>
           <Button
             variant="secondary"
+            style={{ backgroundColor: "#459b37", borderColor: "#459b37" }}
             onClick={() => document.getElementById("csvInput").click()}
           >
             Cargar CSV
@@ -276,44 +277,47 @@ const UserList = () => {
           <>
             {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
             <Table striped bordered hover responsive className="table-sm">
-              <thead>
-                <tr>
-                  <th>RUT</th>
-                  <th>Nombre</th>
-                  <th>Email</th>
-                  <th>Sector</th>
-                  <th>Cargo</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user) => (
-                  <tr key={user.id}>
-                    <td>{user.rut}</td>
-                    <td>{user.nombre}</td>
-                    <td>{user.email || "No disponible"}</td>
-                    <td>{user.sector}</td>
-                    <td>{user.cargo}</td>
-                    <td>
-                      <Button
-                        variant="success"
-                        className="me-2 btn-sm"
-                        onClick={() => handleShowEditModal(user)}
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        variant="danger"
-                        className="btn-sm"
-                        onClick={() => handleShowDeleteModal(user)}
-                      >
-                        Eliminar
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
+  <thead>
+    <tr>
+      <th>RUT</th>
+      <th>Nombre</th>
+      <th>Email</th>
+      <th>Fecha de Nacimiento</th> {/* Nueva columna */}
+      <th>Sector</th>
+      <th>Cargo</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {users.map((user) => (
+      <tr key={user.id}>
+        <td>{user.rut}</td>
+        <td>{user.nombre}</td>
+        <td>{user.email || "No disponible"}</td>
+        <td>{new Date(user.fecha_nac).toISOString().split("T")[0]}</td> {/* Mostrar fecha de nacimiento */}
+        <td>{user.sector}</td>
+        <td>{user.cargo}</td>
+        <td>
+          <Button
+            variant="success"
+            className="me-2 btn-sm"
+            onClick={() => { setSelectedUser(user); setShowEditModal(true); }}
+          >
+            Editar
+          </Button>
+          <Button
+            variant="danger"
+            className="btn-sm"
+            onClick={() => { setSelectedUser(user); setShowDeleteModal(true); }}
+          >
+            Eliminar
+          </Button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</Table>
+
           </>
         )}
       </div>
