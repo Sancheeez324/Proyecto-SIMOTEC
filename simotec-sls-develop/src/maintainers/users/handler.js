@@ -20,9 +20,9 @@ const sendWelcomeEmail = async (to, password, name = "Usuario") => {
     from: '"Simotec" <pablo.sanchez.m2002@gmail.com>',
     to: to,
     subject: "Bienvenido a Simotec",
-    text: `Hola ${name},\n\nBienvenido a Simotec. Tu contraseña es: ${password}\n\nSaludos.`,
+    text: `Hola ${name},\n\nBienvenido a Simotec. Su contraseña para la plataforma de SEGURIDAD SIMOTEC es: ${password}\n\nSaludos.`,
     html: `<p>Hola <strong>${name}</strong>,</p>
-           <p>Bienvenido a Simotec. Tu contraseña es: <strong>${password}</strong></p>
+           <p>Bienvenido a Simotec. Su contraseña para la plataforma de <strong>SEGURIDAD SIMOTEC</strong> es: <strong>${password}</strong></p>
            <p>Saludos.</p>`,
   };
 
