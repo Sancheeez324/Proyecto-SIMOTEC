@@ -167,7 +167,7 @@ module.exports.editUser = async (event) => {
       // Primero verificamos que el usuario pertenezca al cadmin actual
       const [userCheck] = await connection.execute(
         `SELECT auth_user_id FROM users WHERE id = ? AND cadmin_id = ?`,
-        [userId, decoded.id]
+        [userId, decoded.authId]
       );
       
       if (userCheck.length === 0) {
@@ -184,7 +184,7 @@ module.exports.editUser = async (event) => {
           fecha_nac = COALESCE(?, fecha_nac),
           sector = COALESCE(?, sector),
           cargo = COALESCE(?, cargo),
-          updated_at = NOW()
+          created_at = NOW()
          WHERE id = ?`,
         [nombre, rut, fecha_nac, sector, cargo, userId]
       );
@@ -192,7 +192,7 @@ module.exports.editUser = async (event) => {
       // Actualizar email en auth_users si se proporciona
       if (email) {
         await connection.execute(
-          `UPDATE auth_users SET email = ?, updated_at = NOW() WHERE id = ?`,
+          `UPDATE auth_users SET email = ?, created_at = NOW() WHERE id = ?`,
           [email, authUserId]
         );
       }
