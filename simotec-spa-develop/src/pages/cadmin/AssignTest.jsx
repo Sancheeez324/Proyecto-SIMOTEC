@@ -28,7 +28,8 @@ const AssignTest = () => {
       }
 
       const userData = JSON.parse(localStorage.getItem("user"));
-      const cadminId = userData?.id; // ID del cadmin
+      const assignedBy = userData?.id; // 🔄 Usa "id" como antes
+      const cadminId = userData?.authId; // ID del cadmin loggeado
 
       // Llamamos al endpoint
       const response = await fetch(
@@ -65,6 +66,8 @@ const AssignTest = () => {
 
     try {
       const response = await sendRequest(`${import.meta.env.VITE_API_URL}/tests`, "GET");
+      //console.log("Respuesta del backend tests:", response.data); // Verifica qué datos llegan
+
       if (response.status === 200) {
         setTests(response.data);
       } else {
@@ -83,10 +86,16 @@ const AssignTest = () => {
     setErrorMessage("");
     setSuccessMessage("");
 
+    const userData = JSON.parse(localStorage.getItem("user"));
+    const assignedBy = userData?.id; // Asegurar que tiene un valor
+    const cadminId = userData?.auth_user_id ;
+
     try {
       const assignmentData = {
         testId: selectedTest,
         userIds: selectedUsers,
+        cadminId,
+        assignedBy,
       };
 
       const response = await sendRequest(
@@ -122,17 +131,31 @@ const AssignTest = () => {
           {successMessage && <Alert variant="success">{successMessage}</Alert>}
 
           <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="testSelect" className="mb-3">
-              <Form.Label>Seleccionar Test</Form.Label>
-              <Form.Control as="select" value={selectedTest} onChange={(e) => setSelectedTest(e.target.value)} required>
-                <option value="">Seleccione un test</option>
-                {tests.map((test) => (
-                  <option key={test.id} value={test.id}>
-                    {test.test_name} ({test.sector} - {test.tipo})
-                  </option>
-                ))}
-              </Form.Control>
-            </Form.Group>
+          <Form.Group controlId="testSelect" className="mb-3">
+            <Form.Label>Seleccionar Test</Form.Label>
+            <Form.Control
+              as="select"
+              value={selectedTest || ""}
+              onChange={(e) => setSelectedTest(e.target.value)}
+              required
+            >
+              <option value="">Seleccione un test</option>
+              {tests && Array.isArray(tests) && tests.length > 0 ? (
+                tests.map((test, index) => {
+                  //console.log(`Test ${index}:`, test); // 🔍 Depuración
+                  return (
+                    <option key={test.id} value={test.id}>
+                      {`${test.test_name || "Sin Nombre"} - Sector: ${test.sector || "Sin Sector"} - Cargo: ${test.tipo || "Sin Cargo"}`}
+                    </option>
+                  );
+                })
+              ) : (
+                <option disabled>No hay tests disponibles</option>
+              )}
+            </Form.Control>
+          </Form.Group>
+
+
 
             <Form.Group controlId="userSelect" className="mb-3">
               <Form.Label>Seleccionar Usuarios</Form.Label>

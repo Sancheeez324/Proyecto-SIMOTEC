@@ -70,7 +70,7 @@ const loginHandler = async (event) => {
                 default:
                     return generateResponse(400, { message: "Invalid role" });
             }
-
+            console.log(`🔍 Datos obtenidos para ${role}:`, userData);
             if (userData.length === 0) {
                 return generateResponse(500, { message: "User data inconsistency" });
             }

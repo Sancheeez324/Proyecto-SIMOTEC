@@ -180,3 +180,19 @@ functions:
       - httpApi:
           path: /comfirm-test-completed
           method: post
+##############################
+    #TESTS
+##############################
+  getTests:
+    handler: src/maintainers/tests/handler.getTests
+    events:
+      - httpApi:
+          path: /tests
+          method: get
+
+  assignTest:
+    handler: src/maintainers/tests/handler.assignTest
+    events:
+      - httpApi:
+          path: /tests/assign
+          method: post
