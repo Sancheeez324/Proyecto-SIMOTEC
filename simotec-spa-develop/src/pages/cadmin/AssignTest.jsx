@@ -21,20 +21,39 @@ const AssignTest = () => {
     setErrorMessage("");
 
     try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      const cadminId = user.id;
-      const response = await sendRequest(
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setErrorMessage("No se encontró el token de autenticación");
+        return;
+      }
+
+      const userData = JSON.parse(localStorage.getItem("user"));
+      const cadminId = userData?.id; // ID del cadmin
+
+      // Llamamos al endpoint
+      const response = await fetch(
         `${import.meta.env.VITE_API_URL}/users?cadminId=${cadminId}`,
-        "GET"
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
-      if (response.status === 200) {
-        setUsers(response.data.users);
-      } else {
-        setErrorMessage("No se encontraron usuarios");
+      if (!response.ok) {
+        setErrorMessage("Error al cargar usuarios");
+        return;
       }
+
+      const data = await response.json();
+      console.log("Usuarios obtenidos desde el backend:", data.users);
+
+      setUsers(data.users || []);
     } catch (error) {
       setErrorMessage("Error al obtener usuarios");
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
