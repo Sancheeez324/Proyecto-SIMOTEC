@@ -120,7 +120,7 @@ const AssignTest = () => {
               <Form.Control as="select" multiple value={selectedUsers} onChange={(e) => setSelectedUsers(Array.from(e.target.selectedOptions).map(option => option.value))} required>
                 {users.map((user) => (
                   <option key={user.id} value={user.id}>
-                    {user.username}
+                    {user.nombre}
                   </option>
                 ))}
               </Form.Control>

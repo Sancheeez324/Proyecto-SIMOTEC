@@ -15,13 +15,14 @@ export const sendRequest = async (url, method, data) => {
       headers,
       data,
     };
-
+    
     const response = await axios(config);
-
+    
     return {
       status: response.status,
       data: response.data,
     };
+    
   } catch (error) {
     return {
       status: error.response.status,
