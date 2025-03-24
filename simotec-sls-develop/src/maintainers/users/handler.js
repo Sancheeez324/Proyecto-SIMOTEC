@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
 // Función auxiliar para enviar correo usando NodeMailer
 const sendWelcomeEmail = async (to, password, name = "Usuario") => {
   const mailOptions = {
-    from: '"Simotec" <pablo.sanchez.m2002@gmail.com>',
+    from: '"Simotec" <registro.simotec@gmail.com>',
     to: to,
     subject: "Bienvenido a Simotec",
     text: `Hola ${name},\n\nBienvenido a Simotec. Su contraseña para la plataforma de SEGURIDAD SIMOTEC es: ${password}\n\nSaludos.`,
