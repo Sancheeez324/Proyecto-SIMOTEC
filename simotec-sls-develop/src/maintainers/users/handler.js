@@ -9,8 +9,8 @@ const { generateResponse, getFechaChile } = require("../../utils/utils");
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "pablo.sanchez.m2002@gmail.com", // Tu correo verificado
-    pass: "TU_CONTRASEÑA_DE_APLICACIÓN",      // Contraseña de aplicación de Gmail
+    user: "registro.simotec@gmail.com", // Tu correo verificado
+    pass: "vadc fxtn meal awsp",      // Contraseña de aplicación de Gmail
   },
 });
 
@@ -28,9 +28,11 @@ const sendWelcomeEmail = async (to, password, name = "Usuario") => {
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log("Correo enviado. MessageId:", info.messageId);
+    console.log("📧 Correo enviado con éxito. MessageId:", info.messageId);
+    return info;
   } catch (error) {
-    console.error("Error al enviar correo:", error);
+    console.error("❌ Error al enviar correo:", error);
+    throw new Error("No se pudo enviar el correo");
   }
 };
 
