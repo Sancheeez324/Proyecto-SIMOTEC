@@ -9,9 +9,13 @@ import logoEcos from "../../fotos/Icon2SinFondo.png";
 const AdminDashboard = () => {
   const [userCount, setUserCount] = useState(0);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
+  const [assignedTestsCount, setAssignedTestsCount] = useState(0);
+  const [loading, setLoading] = useState({
+    users: true,
+    tests: true
+  });
+  
+  useEffect(() => {    
     const fetchUserCount = async () => {
       setLoading(true);
       setError(null);
@@ -59,10 +63,12 @@ const AdminDashboard = () => {
         setLoading(false);
       }
     };
-
+    
     fetchUserCount();
+    
   }, []);
 
+  
   return (
     <div className="d-flex flex-column min-vh-100">
       {/* Encabezado con Logo */}
@@ -106,7 +112,7 @@ const AdminDashboard = () => {
             <Card>
               <Card.Body>
                 <Card.Title>Tests Asignados</Card.Title>
-                <Card.Text>Tests asignados recientemente: <strong>0</strong></Card.Text>
+                <Card.Text>Asignar tests a trabajadores.</Card.Text>
                 <Button as={Link} to="/cadmin/assign-tests" variant="primary">
                   Asignar Tests
                 </Button>

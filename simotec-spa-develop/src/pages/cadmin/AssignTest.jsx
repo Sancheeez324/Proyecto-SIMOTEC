@@ -88,7 +88,7 @@ const AssignTest = () => {
 
     const userData = JSON.parse(localStorage.getItem("user"));
     const assignedBy = userData?.id; // Asegurar que tiene un valor
-    const cadminId = userData?.auth_user_id ;
+    const cadminId = userData?.authId ;
 
     try {
       const assignmentData = {
@@ -97,7 +97,7 @@ const AssignTest = () => {
         cadminId,
         assignedBy,
       };
-
+      console.log(assignmentData);
       const response = await sendRequest(
         `${import.meta.env.VITE_API_URL}/tests/assign`,
         "POST",
@@ -109,7 +109,7 @@ const AssignTest = () => {
         setSelectedUsers([]);
         setSelectedTest("");
       } else {
-        setErrorMessage("Error al asignar el test");
+        setErrorMessage("Error al asignar el test, no corresponde a cargo o a sector");
       }
     } catch (error) {
       setErrorMessage("Error al asignar el test");
@@ -142,7 +142,7 @@ const AssignTest = () => {
               <option value="">Seleccione un test</option>
               {tests && Array.isArray(tests) && tests.length > 0 ? (
                 tests.map((test, index) => {
-                  //console.log(`Test ${index}:`, test); // 🔍 Depuración
+                  console.log(`Test ${index}:`, test); // 🔍 Depuración
                   return (
                     <option key={test.id} value={test.id}>
                       {`${test.test_name || "Sin Nombre"} - Sector: ${test.sector || "Sin Sector"} - Cargo: ${test.tipo || "Sin Cargo"}`}
@@ -160,9 +160,9 @@ const AssignTest = () => {
             <Form.Group controlId="userSelect" className="mb-3">
               <Form.Label>Seleccionar Usuarios</Form.Label>
               <Form.Control as="select" multiple value={selectedUsers} onChange={(e) => setSelectedUsers(Array.from(e.target.selectedOptions).map(option => option.value))} required>
-                {users.map((user) => (
+              {users.map((user) => (
                   <option key={user.id} value={user.id}>
-                    {user.nombre}
+                    {`${user.nombre || 'Sin nombre'} ${user.apellido || ''} - ${user.sector || 'Sin sector'} - ${user.cargo || 'Sin cargo'}`}
                   </option>
                 ))}
               </Form.Control>

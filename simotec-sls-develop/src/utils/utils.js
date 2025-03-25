@@ -14,7 +14,7 @@ const getFechaChile = (fecha, isFullDate) => {
   const momentObj = fecha ? moment(fecha) : moment();
   const formattedDate = momentObj
     .tz("America/Santiago")
-    .format(isFullDate ? "DD-MM-YYYY HH:mm:ss" : "DD-MM-YYYY");
+    .format(isFullDate ? "YYYY-MM-DD HH:mm:ss" : "YYYY-MM-DD");
   return formattedDate;
 };
 

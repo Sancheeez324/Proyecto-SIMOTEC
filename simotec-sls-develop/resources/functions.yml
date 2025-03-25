@@ -189,7 +189,6 @@ functions:
       - httpApi:
           path: /tests
           method: get
-
   assignTest:
     handler: src/maintainers/tests/handler.assignTest
     events:
