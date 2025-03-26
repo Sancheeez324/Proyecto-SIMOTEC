@@ -18,9 +18,6 @@ const Navigation = () => {
           <Nav.Link as={Link} to="/">
             Inicio
           </Nav.Link>
-          <Nav.Link as={Link} to="/contact">
-            Contacto
-          </Nav.Link>
           {isAuthenticated && userType === "cadmin" && (
             <Nav.Link as={Link} to="/cadmin">
               Admin Dashboard

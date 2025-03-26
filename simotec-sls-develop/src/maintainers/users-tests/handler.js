@@ -1,406 +1,233 @@
-const { queryWithTransaction } = require("../../config/database");
-const { generateResponse } = require("../../utils/utils");
-const { validateToken } = require("../../config/auth");
+const db = require("../../config/database");
+const { generateResponse, getFechaChile, parseEventBody } = require("../../utils/utils");
 
-// TODO: Agregar validaciones de tiempo al test⚠️
-
-// Función startTest usando created_at en lugar de last_start_time
-module.exports.startTest = async (event) => {
-  try {
-    const { test_id, evaluation_cycle_id, round_id } = JSON.parse(event.body);
-
-    if (!test_id || !evaluation_cycle_id || !round_id) {
-      return generateResponse(400, {
-        message: "Test ID, Evaluation Cycle ID, and Round ID are required",
-      });
-    }
-
-    const token = event.headers["authorization"];
-    const userData = await validateToken(token, ["compania_usuario"]);
-
-    return await queryWithTransaction(async (connection) => {
-      const [cycleInfo] = await connection.execute(
-        `SELECT ec.id AS cycle_id, ec.status AS cycle_status, r.status AS round_status
-           FROM evaluation_cycles ec
-           JOIN rounds r ON r.evaluation_cycle_id = ec.id
-           JOIN assigned_tests at ON at.round_id = r.id
-           WHERE ec.status = 'active'
-             AND r.status = 'pending'
-             AND at.user_id = ? 
-             AND at.test_id = ? 
-             AND ec.id = ? 
-             AND r.id = ?`,
-        [userData.id, test_id, evaluation_cycle_id, round_id]
-      );
-
-      if (cycleInfo.length === 0) {
-        return generateResponse(403, {
-          message: "Invalid cycle, round, or test assignment",
-        });
-      }
-
-      const [existingProgress] = await connection.execute(
-        "SELECT * FROM test_progress WHERE user_id = ? AND assigned_test_id = ?",
-        [userData.id, test_id]
-      );
-
-      if (existingProgress.length > 0) {
-        return generateResponse(200, {
-          message: "Test already started",
-          progress: existingProgress[0],
-        });
-      }
-
-      // Usando created_at como campo de inicio del test
-      await connection.execute(
-        "INSERT INTO test_progress (user_id, assigned_test_id, time_spent, created_at) VALUES (?, ?, ?, NOW())",
-        [userData.id, test_id, 0]
-      );
-
-      return generateResponse(201, {
-        message: "Test started",
-        test_id,
-        evaluation_cycle_id,
-        round_id,
-        time_spent: 0,
-      });
-    });
-  } catch (error) {
-    console.error("Error starting test:", error);
-    return generateResponse(500, { message: "Internal Server Error" });
-  }
-};
-
-module.exports.saveTestProgress = async (event) => {
-  try {
-    const { test_id, evaluation_cycle_id, round_id, questions } = JSON.parse(
-      event.body
-    );
-
-    if (
-      !test_id ||
-      !evaluation_cycle_id ||
-      !round_id ||
-      !questions ||
-      questions.length === 0
-    ) {
-      return generateResponse(400, {
-        message:
-          "Test ID, evaluation cycle ID, round ID, and questions are required",
-      });
-    }
-
-    const token = event.headers["authorization"];
-    const userData = await validateToken(token, ["compania_usuario"]);
-
-    console.debug(
-      `ACTUALIZANDO TEST: ${test_id} - cycle:${evaluation_cycle_id} - round:${round_id}`
-    );
-
-    return await queryWithTransaction(async (connection) => {
-      // Obtener información del test y el progreso
-      const [testInfo] = await connection.execute(
-        `SELECT tp.created_at, t.elapsed_time
-         FROM test_progress tp
-         JOIN tests t ON tp.assigned_test_id = ?
-         WHERE tp.user_id = ? AND tp.assigned_test_id = ?`,
-        [test_id, userData.id, test_id]
-      );
-
-      if (testInfo.length === 0) {
-        return generateResponse(404, { message: "Test progress not found" });
-      }
-
-      // Calcular tiempo transcurrido
-      const timeElapsed = await calculateElapsedTime(
-        connection,
-        userData.id,
-        test_id
-      );
-
-      console.debug(`INIT updateTemporaryResponses()`);
-      // Actualizar respuestas temporales
-      await updateTemporaryResponses(
-        connection,
-        userData.id,
-        test_id,
-        evaluation_cycle_id,
-        round_id,
-        questions
-      );
-
-      console.debug(`END updateTemporaryResponses()`);
-
-      return generateResponse(200, {
-        message: "Test progress and responses saved",
-        test_id,
-        timeElapsed,
-      });
-    });
-  } catch (error) {
-    console.error("Error saving test progress and responses:", error);
-    return generateResponse(500, { message: "Internal Server Error" });
-  }
-};
-
-module.exports.getTestProgress = async (event) => {
-  try {
-    const { test_id, evaluation_cycle_id, round_id } = JSON.parse(event.body);
-    const token = event.headers["authorization"];
-    const userData = await validateToken(token, ["compania_usuario"]);
-
-    return await queryWithTransaction(async (connection) => {
-      // Calcular tiempo transcurrido
-      const timeElapsed = await calculateElapsedTime(
-        connection,
-        userData.id,
-        test_id
-      );
-
-      // Consulta optimizada para obtener preguntas y opciones seleccionadas por el usuario
-      const [questions] = await connection.execute(
-        `SELECT 
-            q.id AS question_id,
-            q.question_text,
-            q.question_type,
-            qo.id AS option_id,
-            qo.option_text,
-            CASE WHEN selected_options.selected_option_id = qo.id THEN 1 ELSE 0 END AS is_selected
-         FROM 
-            questions q
-         JOIN 
-            assigned_tests at ON at.test_id = q.test_id
-         JOIN 
-            rounds r ON r.id = at.round_id
-         LEFT JOIN 
-            question_options qo ON qo.question_id = q.id
-         LEFT JOIN 
-            (
-                SELECT 
-                    question_id, selected_option_id 
-                FROM 
-                    user_responses_temp 
-                WHERE 
-                    user_id = ? 
-                    AND assigned_test_id = ?
-                    AND round_id = ? 
-                    AND evaluation_cycle_id = ?
-            ) AS selected_options ON selected_options.question_id = q.id
-         WHERE 
-            at.test_id = ? 
-            AND at.round_id = ? 
-            AND r.evaluation_cycle_id = ?`,
-        [
-          userData.id,
-          test_id,
-          round_id,
-          evaluation_cycle_id,
-          test_id,
-          round_id,
-          evaluation_cycle_id,
-        ]
-      );
-
-      // Reorganizar las preguntas y opciones en el formato esperado
-      const questionsWithOptions = questions.reduce((acc, row) => {
-        let question = acc.find((q) => q.question_id === row.question_id);
-
-        if (!question) {
-          question = {
-            question_id: row.question_id,
-            question_text: row.question_text,
-            question_type: row.question_type,
-            options: [],
-          };
-          acc.push(question);
+// 1. Obtener tests asignados a un usuario
+module.exports.getAssignedTests = async (event) => {
+    try {
+        const { user_id } = event.pathParameters;
+        
+        if (!user_id || isNaN(user_id)) {
+            return generateResponse(400, { message: "ID de usuario inválido" });
         }
 
-        question.options.push({
-          option_id: row.option_id,
-          option_text: row.option_text,
-          is_selected: row.is_selected,
+        const [tests] = await db.query(
+            `SELECT 
+                at.id as assigned_test_id, 
+                t.id as test_id, 
+                t.test_name, 
+                t.description,
+                at.status, 
+                at.start_time, 
+                at.duration_minutes,
+                t.passing_score,
+                t.sector,
+                t.tipo
+             FROM assigned_tests at
+             JOIN tests t ON at.test_id = t.id 
+             WHERE at.user_id = ? AND at.status IN ('pendiente', 'reiniciado')`,
+            [user_id]
+        );
+        
+        return generateResponse(200, tests);
+    } catch (error) {
+        console.error("Error al obtener tests asignados:", error);
+        return generateResponse(500, { message: "Error interno del servidor" });
+    }
+};
+
+// 2. Obtener preguntas y opciones de un test
+module.exports.getTestQuestions = async (event) => {
+    try {
+        const test_id = event.pathParameters?.test_id || event.pathParameters?.['test_id'];        console.log("Test recibido ", test_id);
+        if (!test_id || isNaN(test_id)) {
+            return generateResponse(400, { message: "ID de test inválido" });
+        }
+
+        const [[testExists]] = await db.query(
+            "SELECT id FROM tests WHERE id = ?",
+            [test_id]
+        );
+        
+        if (!testExists) {
+            return generateResponse(404, { message: "Test no encontrado" });
+        }
+
+        const [questions] = await db.query(
+            `SELECT 
+                q.id, 
+                q.question_text, 
+                q.type, 
+                q.sector, 
+                q.weight, 
+                q.image_url,
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id', o.id,
+                        'option_text', o.option_text,
+                        'is_correct', o.is_correct
+                    )
+                ) as options
+             FROM questions q
+             LEFT JOIN options o ON q.id = o.question_id
+             WHERE q.test_id = ?
+             GROUP BY q.id
+             ORDER BY q.id`,
+            [test_id]
+        );
+        
+        if (questions.length === 0) {
+            return generateResponse(404, { message: "No se encontraron preguntas para este test" });
+        }
+
+        const sanitizedQuestions = questions.map(question => {
+            question.options = question.options.map(option => {
+                const { is_correct, ...rest } = option;
+                return rest;
+            });
+            return question;
         });
 
-        return acc;
-      }, []);
-
-      return generateResponse(200, {
-        test_id,
-        timeElapsed,
-        questions: questionsWithOptions,
-      });
-    });
-  } catch (error) {
-    console.error("Error in getTestProgress:", error);
-    return generateResponse(500, { message: "Internal Server Error" });
-  }
+        return generateResponse(200, sanitizedQuestions);
+    } catch (error) {
+        console.error("Error al obtener preguntas del test:", error);
+        return generateResponse(500, { message: "Error interno del servidor" });
+    }
 };
 
-module.exports.confirmTestCompletion = async (event) => {
-  try {
-    const { test_id, evaluation_cycle_id, round_id, questions } = JSON.parse(
-      event.body
-    );
+// 3. Enviar respuestas del test
+module.exports.submitTest = async (event) => {
+    const transaction = await db.beginTransaction();
+    try {
+        const { test_id } = event.pathParameters;
+        const { user_id, responses } = parseEventBody(event);
 
-    if (
-      !test_id ||
-      !evaluation_cycle_id ||
-      !round_id ||
-      !questions ||
-      questions.length === 0
-    ) {
-      return generateResponse(400, {
-        message:
-          "Test ID, Evaluation Cycle ID, Round ID, and questions are required",
-      });
-    }
-
-    const token = event.headers["authorization"];
-    const userData = await validateToken(token, ["compania_usuario"]);
-
-    return await queryWithTransaction(async (connection) => {
-      // Paso 3: Guardar respuestas en `user_responses`
-      for (const question of questions) {
-        if (question && question.options) {
-          const selectedOption = question.options.find(
-            (option) => option.is_selected === 1
-          );
-
-          if (selectedOption) {
-            await connection.execute(
-              `INSERT INTO user_responses (user_id, assigned_test_id, question_id, selected_option_id, round_id, evaluation_cycle_id)
-              VALUES (?, ?, ?, ?, ?, ?)
-              ON DUPLICATE KEY UPDATE selected_option_id = VALUES(selected_option_id)`,
-              [
-                userData.id,
-                test_id,
-                question.question_id,
-                selectedOption.option_id,
-                round_id,
-                evaluation_cycle_id,
-              ]
-            );
-          }
+        if (!user_id || !responses || !Array.isArray(responses)) {
+            await transaction.rollback();
+            return generateResponse(400, { message: "Datos de entrada inválidos" });
         }
-      }
 
-      // Paso 4: Actualizar el estado del test en `assigned_tests` a 'completed'
-      await connection.execute(
-        `UPDATE assigned_tests at
-         JOIN rounds r ON at.round_id = r.id
-         SET at.status = 'completed'
-         WHERE at.user_id = ? AND at.test_id = ? AND at.round_id = ? AND r.evaluation_cycle_id = ?`,
-        [userData.id, test_id, round_id, evaluation_cycle_id]
-      );
+        const [[test]] = await transaction.query(
+            `SELECT 
+                t.passing_score,
+                t.sector,
+                at.id as assigned_test_id
+             FROM tests t
+             JOIN assigned_tests at ON t.id = at.test_id
+             WHERE t.id = ? AND at.user_id = ?`,
+            [test_id, user_id]
+        );
+        
+        if (!test) {
+            await transaction.rollback();
+            return generateResponse(404, { message: "Test no encontrado o no asignado al usuario" });
+        }
 
-      // Paso 5: Registrar la finalización en `test_logs`
-      await connection.execute(
-        `INSERT INTO test_logs (user_id, assigned_test_id, event_type)
-         VALUES (?, ?, 'complete')`,
-        [userData.id, test_id]
-      );
+        let totalScore = 0;
+        let totalWeight = 0;
+        const questionIds = responses.map(r => r.question_id);
 
-      return generateResponse(200, {
-        message: "Test completed successfully",
-      });
-    });
-  } catch (error) {
-    console.error("Error completing test:", error);
-    return generateResponse(500, { message: "Internal Server Error" });
-  }
+        const [questions] = await transaction.query(
+            `SELECT 
+                q.id, 
+                q.weight, 
+                q.type,
+                GROUP_CONCAT(o.id ORDER BY o.id SEPARATOR ',') as correct_options
+             FROM questions q
+             LEFT JOIN options o ON q.id = o.question_id AND o.is_correct = 1
+             WHERE q.test_id = ? AND q.id IN (?)
+             GROUP BY q.id`,
+            [test_id, questionIds]
+        );
+
+        if (questions.length !== responses.length) {
+            await transaction.rollback();
+            return generateResponse(400, { message: "Algunas preguntas no pertenecen a este test" });
+        }
+
+        for (const response of responses) {
+            const question = questions.find(q => q.id === response.question_id);
+            if (!question) continue;
+
+            const correctOptions = question.correct_options ? question.correct_options.split(',').map(Number) : [];
+            const userAnswers = Array.isArray(response.selected_options) ? 
+                              response.selected_options.map(Number) : [];
+
+            let isCorrect = false;
+
+            if (question.type === 'simple') {
+                isCorrect = userAnswers.length === 1 && 
+                           correctOptions.includes(userAnswers[0]);
+            } else {
+                isCorrect = correctOptions.length === userAnswers.length && 
+                           correctOptions.every(id => userAnswers.includes(id));
+            }
+
+            if (isCorrect) {
+                totalScore += question.weight;
+            }
+            totalWeight += question.weight;
+        }
+
+        const finalScore = totalWeight > 0 ? (totalScore / totalWeight) * 100 : 0;
+        const passed = finalScore >= test.passing_score;
+        const newStatus = passed ? "completado" : "reiniciado";
+
+        await transaction.query(
+            `UPDATE assigned_tests 
+             SET status = ?, 
+                 score = ?, 
+                 completed_at = ?
+             WHERE id = ?`,
+            [newStatus, finalScore, getFechaChile(null, true), test.assigned_test_id]
+        );
+
+        await transaction.commit();
+        
+        return generateResponse(200, { 
+            message: "Test evaluado", 
+            passed, 
+            score: finalScore.toFixed(2),
+            passing_score: test.passing_score,
+            status: newStatus
+        });
+    } catch (error) {
+        await transaction.rollback();
+        console.error("Error al procesar respuestas del test:", error);
+        return generateResponse(500, { message: "Error interno del servidor" });
+    }
 };
 
-// #################################################
-// FUNCIONES AUXILIARES
-// #################################################
-async function updateTemporaryResponses(
-  connection,
-  userId,
-  testId,
-  evaluationCycleId,
-  roundId,
-  questions
-) {
-  for (const question of questions) {
-    const { question_id, options } = question;
-    const selectedOption = options.find((option) => option.is_selected === 1);
+// 4. Actualizar estado del test asignado
+module.exports.updateTestStatus = async (event) => {
+    const transaction = await db.beginTransaction();
+    try {
+        const { assigned_test_id } = event.pathParameters;
+        const { status } = parseEventBody(event);
 
-    if (selectedOption) {
-      const { option_id } = selectedOption;
+        const allowedStatuses = ['pendiente', 'completado', 'reiniciado'];
+        if (!allowedStatuses.includes(status)) {
+            await transaction.rollback();
+            return generateResponse(400, { message: "Estado no válido" });
+        }
 
-      const [existingResponse] = await connection.execute(
-        `SELECT id FROM user_responses_temp 
-         WHERE user_id = ? AND assigned_test_id = ? AND question_id = ? AND round_id = ? AND evaluation_cycle_id = ?`,
-        [userId, testId, question_id, roundId, evaluationCycleId]
-      );
-
-      if (existingResponse.length > 0) {
-        await connection.execute(
-          `UPDATE user_responses_temp SET selected_option_id = ? WHERE id = ?`,
-          [option_id, existingResponse[0].id]
+        const [result] = await transaction.query(
+            `UPDATE assigned_tests 
+             SET status = ?,
+                 start_time = IF(status = 'pendiente' AND ? = 'reiniciado', ?, start_time)
+             WHERE id = ?`,
+            [status, status, getFechaChile(null, true), assigned_test_id]
         );
-      } else {
-        await connection.execute(
-          `INSERT INTO user_responses_temp (user_id, assigned_test_id, question_id, selected_option_id, round_id, evaluation_cycle_id)
-           VALUES (?, ?, ?, ?, ?, ?)`,
-          [userId, testId, question_id, option_id, roundId, evaluationCycleId]
-        );
-      }
-    } else {
-      await connection.execute(
-        `DELETE FROM user_responses_temp 
-         WHERE user_id = ? AND assigned_test_id = ? AND question_id = ? AND round_id = ? AND evaluation_cycle_id = ?`,
-        [userId, testId, question_id, roundId, evaluationCycleId]
-      );
+
+        if (result.affectedRows === 0) {
+            await transaction.rollback();
+            return generateResponse(404, { message: "Test asignado no encontrado" });
+        }
+
+        await transaction.commit();
+        return generateResponse(200, { message: "Estado del test actualizado" });
+    } catch (error) {
+        await transaction.rollback();
+        console.error("Error al actualizar estado del test:", error);
+        return generateResponse(500, { message: "Error interno del servidor" });
     }
-  }
-}
-
-// Función auxiliar para calcular el tiempo transcurrido desde el inicio del test
-async function calculateElapsedTime(connection, userId, testId) {
-  const [progress] = await connection.execute(
-    `SELECT created_at FROM test_progress WHERE user_id = ? AND assigned_test_id = ?`,
-    [userId, testId]
-  );
-
-  if (progress.length === 0) {
-    return 0; // Si no hay progreso registrado, el tiempo transcurrido es 0
-  }
-
-  const createdAt = new Date(progress[0].created_at);
-  const currentTime = new Date();
-  const timeElapsed = Math.floor((currentTime - createdAt) / 1000); // Tiempo en segundos
-
-  return timeElapsed;
-}
-
-
-// TODO: IMPLEMENTAR ESTA FUNCIÓN⚠️
-// Funcion para validar si un test ha sido completado.
-// probada ok en base de datos local.
-const isTestCompleted = async (
-  connection,
-  test_id,
-  evaluation_cycle_id,
-  round_id,
-  user_id
-) => {
-  // Query para verificar si el número de respuestas del usuario coincide con el número total de preguntas
-  const [result] = await connection.execute(
-    `
-    SELECT COUNT(q.id) = COUNT(ur.id) AS is_completed
-    FROM questions q
-    LEFT JOIN user_responses ur 
-      ON ur.question_id = q.id
-      AND ur.assigned_test_id = ?
-      AND ur.evaluation_cycle_id = ?
-      AND ur.round_id = ?
-      AND ur.user_id = ?
-    WHERE q.test_id = ?
-    `,
-    [test_id, evaluation_cycle_id, round_id, user_id, test_id]
-  );
-
-  // Retornar true o false según si el test está completo
-  return result[0].is_completed === 1;
 };

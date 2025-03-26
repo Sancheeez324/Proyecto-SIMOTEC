@@ -4,15 +4,20 @@ import { Container, Spinner } from "react-bootstrap";
 import { useAuth, AuthProvider } from "./context/Sessions.jsx";
 import Navigation from "./components/Navigation.jsx";
 
+// Carga diferida de componentes
 const Landing = lazy(() => import("./pages/landing/Landing.jsx"));
 const Login = lazy(() => import("./pages/login/Login.jsx"));
-const LoginSuperAdmin = lazy(() => import ("./pages/login/LoginSuperAdmin.jsx"));
-const TestComponent = lazy(() => import("./pages/test/TestComponent.jsx"));
+const LoginSuperAdmin = lazy(() => import("./pages/login/LoginSuperAdmin.jsx"));
 
 // Importaciones para el flujo de Cadmin
 const AdminDashboard = lazy(() => import("./pages/cadmin/AdminDashboard.jsx"));
 const UserList = lazy(() => import("./pages/cadmin/UserList.jsx"));
 const AssignTest = lazy(() => import("./pages/cadmin/AssignTest.jsx"));
+
+// Importaciones para el flujo de Tests
+const TestDashboard = lazy(() => import("./pages/tests/TestDashboard.jsx"));
+const TakeTest = lazy(() => import("./pages/tests/TakeTest.jsx"));
+const TestResult = lazy(() => import("./pages/tests/TestResult.jsx"));
 
 // Ruta para superadmin
 const SuperAdminHome = lazy(() => import("./pages/super_admin/SuperAdminHome.jsx"));
@@ -20,76 +25,70 @@ const SuperAdminHome = lazy(() => import("./pages/super_admin/SuperAdminHome.jsx
 // Ruta de usuario
 const UserHome = lazy(() => import("./pages/user/UserHome.jsx"));
 
-const ProtectedRoute = ({ element, ...rest }) => {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated ? element : <Navigate to="/" />;
-};
-
-
-const SuperAdminProtectedRoute = ({ element, ...rest }) => {
-  const { hasRole } = useAuth();
-  return hasRole("super_admin") ? element : <Navigate to="/" />;
-};
-
-// Ruta para el login de superadmin (solo accesible manualmente)
-const SuperAdminLoginRoute = ({ element, ...rest }) => {
-  const { isAuthenticated } = useAuth();
-  // Si el usuario ya está autenticado, redirige a la página de superadmin
-  return isAuthenticated && role === "super_admin"  ? <Navigate to="/superadmin" /> : element;
+const ProtectedRoute = ({ element, requiredRole }) => {
+  const { isAuthenticated, hasRole } = useAuth();
+  
+  if (!isAuthenticated) return <Navigate to="/" />;
+  if (requiredRole && !hasRole(requiredRole)) return <Navigate to="/userhome" />;
+  
+  return element;
 };
 
 function App() {
   return (
-    <Container fluid>
-      <AuthProvider>
-        <Navigation />
-        <Suspense fallback={<Spinner animation="border" />}>
+    <AuthProvider>
+      <Navigation />
+      <Container fluid style={{ padding: 0, marginTop: '70px' }}>
+        <Suspense fallback={
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh'
+          }}>
+            <Spinner animation="border" />
+          </div>
+        }>
           <Routes>
+            {/* Rutas públicas */}
             <Route path="/" element={<Landing />} />
-            <Route path="/contact" element={<h1>Contact</h1>} />
             <Route path="/login" element={<Login />} />
-            {/* Ruta de login de superadmin (solo accesible manualmente) */}
-            <Route
-              path="/superadmin"
-              element={<SuperAdminLoginRoute element={<LoginSuperAdmin />} />}
-            />
+            <Route path="/superadmin-login" element={<LoginSuperAdmin />} />
 
+            {/* Rutas de usuario */}
+            <Route path="/userhome" element={
+              <ProtectedRoute element={<UserHome />} requiredRole="user" />
+            } />
+            <Route path="/tests" element={
+              <ProtectedRoute element={<TestDashboard />} requiredRole="user" />
+            } />
+            <Route path="/take-test/:assigned_test_id" element={
+              <ProtectedRoute element={<TakeTest />} requiredRole="user" />
+            } />
+            <Route path="/test-result/:assigned_test_id" element={
+              <ProtectedRoute element={<TestResult />} requiredRole="user" />
+            } />
 
-            {/* Test Component */}
-            <Route path="/test" element={<TestComponent />} />
+            {/* Rutas de administrador */}
+            <Route path="/cadmin" element={
+              <ProtectedRoute element={<AdminDashboard />} requiredRole="cadmin" />
+            } />
+            <Route path="/cadmin/users" element={
+              <ProtectedRoute element={<UserList />} requiredRole="cadmin" />
+            } />
+            <Route path="/cadmin/assign-tests" element={
+              <ProtectedRoute element={<AssignTest />} requiredRole="cadmin" />
+            } />
 
-            {/* Protected Routes */}
-            {/* RUTA PARA USUARIOS */}
-            <Route
-              path="/userhome"
-              element={<ProtectedRoute element={<UserHome />} />}
-            />
-
-            {/* RUTAS PARA ADMINISTRADORES */}
-            <Route
-              path="/cadmin"
-              element={<ProtectedRoute element={<AdminDashboard />} />}
-            />
-            <Route
-              path="/cadmin/users"
-              element={<ProtectedRoute element={<UserList />} />}
-            />
-            <Route
-              path="/cadmin/assign-tests"
-              element={<ProtectedRoute element={<AssignTest />} />}
-            />
-            {/* RUTAS PARA SUPERADMINS */}
-            <Route
-              path="/superadmin/SuperAdminHome"
-              element={<SuperAdminProtectedRoute element={<SuperAdminHome />} />}
-            />
+            {/* Rutas de superadmin */}
+            <Route path="/superadmin" element={
+              <ProtectedRoute element={<SuperAdminHome />} requiredRole="super_admin" />
+            } />
           </Routes>
         </Suspense>
-      </AuthProvider>
-    </Container>
+      </Container>
+    </AuthProvider>
   );
 }
 
 export default App;
-
-ProtectedRoute.propTypes = Route.propTypes;

@@ -154,33 +154,40 @@ functions:
           path: /cycles/{id}
           method: delete
   ########################################
-  #
+  # REALIZAR TESTS
   ########################################
-  start-test:
-    handler: src/maintainers/users-tests/handler.startTest
+  getAssignedTests:
+    handler: src/maintainers/users-tests/handler.getAssignedTests
     events:
       - httpApi:
-          path: /users-tests
+          path: /assigned-tests/{user_id}
+          method: get          
+
+  # 2. Obtener preguntas de un test
+  getTestQuestions:
+    handler: src/maintainers/users-tests/handler.getTestQuestions
+    events:
+      - httpApi:
+          path: /user-tests/{test_id}/questions
+          method: get
+          
+  # 3. Enviar respuestas de un test
+  submitTest:
+    handler: src/maintainers/users-tests/handler.submitTest
+    events:
+      - httpApi:
+          path: /user-tests/{test_id}/submit
           method: post
-  save-test-progress:
-    handler: src/maintainers/users-tests/handler.saveTestProgress
+          
+
+  # 4. Actualizar estado de un test asignado
+  updateTestStatus:
+    handler: src/maintainers/users-tests/handler.updateTestStatus
     events:
       - httpApi:
-          path: /users-tests/{id}
-          method: put
-  get-test-progress:
-    handler: src/maintainers/users-tests/handler.getTestProgress
-    events:
-      - httpApi:
-          path: /users-tests/test-progress
-          method: post
-  confirm-test-completion:
-    handler: src/maintainers/users-tests/handler.confirmTestCompletion
-    events:
-      - httpApi:
-          path: /comfirm-test-completed
-          method: post
-##############################
+          path: /user-tests/{assigned_test_id}/status
+          method: patch
+          
     #TESTS
 ##############################
   getTests:
