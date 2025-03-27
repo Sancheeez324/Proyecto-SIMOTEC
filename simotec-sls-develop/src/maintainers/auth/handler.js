@@ -13,9 +13,9 @@ const loginHandler = async (event) => {
     }
 
     return await queryWithTransaction(async (connection) => {
-      // 1. Buscar en auth_users primero
+      // 1. Buscar en auth_users
       const [authUsers] = await connection.execute(
-        "SELECT * FROM auth_users WHERE email = ?", 
+        "SELECT * FROM auth_users WHERE email = ?",
         [email]
       );
       if (authUsers.length === 0) {
@@ -26,9 +26,9 @@ const loginHandler = async (event) => {
 
       // 2. Verificar coincidencia de rol
       if (authUser.user_type !== role) {
-        return generateResponse(403, { 
-          message: `Ud no es un usuario de tipo ${role}`, 
-          actualRole: authUser.user_type 
+        return generateResponse(403, {
+          message: `Ud no es un usuario de tipo ${role}`,
+          actualRole: authUser.user_type,
         });
       }
 
@@ -37,65 +37,64 @@ const loginHandler = async (event) => {
       if (!isPasswordValid) {
         return generateResponse(401, { message: "Invalid credentials" });
       }
-
+      console.log("Rol recibido en backend:", role);
+      console.log("authUser.user_type:", authUser.user_type);
       // 4. Obtener datos específicos del rol
       let userData;
       switch (role) {
-        case 'user':
+        case "user":
           [userData] = await connection.execute(
             "SELECT * FROM users WHERE auth_user_id = ?",
             [authUser.id]
           );
           break;
-        
-        case 'cadmin':
+
+        case "cadmin":
           [userData] = await connection.execute(
             "SELECT * FROM cadmins WHERE auth_user_id = ?",
             [authUser.id]
           );
           break;
-        
-        case 'super_admin':
+
+        case "super_admin":
           [userData] = await connection.execute(
             "SELECT * FROM super_admins WHERE auth_user_id = ?",
             [authUser.id]
           );
           break;
 
-        case 'psicologo':
-          // Si NO tienes una tabla `psychologists`, puedes simplemente asignar userData al authUser
-          // para evitar el error "User data inconsistency".
-          // Ejemplo minimal:
-          userData = [{ id: authUser.id }]; 
+        case "psicologo":
+          // Como no hay tabla `psychologists`, usamos un objeto mínimo:
+          userData = [{ id: authUser.id }];
           break;
 
         default:
           return generateResponse(400, { message: "Invalid role" });
       }
 
-      // 5. Validar que tengamos userData
+      // 5. Validar userData
       if (!userData || userData.length === 0) {
         return generateResponse(500, { message: "User data inconsistency" });
       }
 
       const specificUser = userData[0];
 
-      // 6. Generar el accessToken
-      const accessToken = generateAccessToken({ 
-        id: specificUser.id, 
+      // 6. Generar accessToken
+      const accessToken = generateAccessToken({
+        id: specificUser.id,
         authId: authUser.id,
-        role: authUser.user_type 
+        role: authUser.user_type,
       });
 
-      // Guardar el refreshToken en la BD
+      // 7. Generar y guardar refreshToken en la BD
       await generateRefreshToken(authUser.id, connection);
 
-      return generateResponse(200, { 
-        token: accessToken, 
+      return generateResponse(200, {
+        token: accessToken,
         role: authUser.user_type,
         user: authUser,
         userId: specificUser.id,
-        authId: authUser.id
+        authId: authUser.id,
       });
     });
   } catch (error) {
@@ -106,20 +105,20 @@ const loginHandler = async (event) => {
 
 const generateAccessToken = (user) => {
   return jwt.sign(
-    { 
-      id: user.id, 
+    {
+      id: user.id,
       authId: user.authId,
-      role: user.role 
-    }, 
-    process.env.JWT_SECRET, 
+      role: user.role,
+    },
+    process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN }
   );
 };
 
 const generateRefreshToken = async (authUserId, connection) => {
   const refreshToken = jwt.sign(
-    { authId: authUserId }, 
-    process.env.JWT_SECRET, 
+    { authId: authUserId },
+    process.env.JWT_SECRET,
     { expiresIn: "1d" }
   );
 
