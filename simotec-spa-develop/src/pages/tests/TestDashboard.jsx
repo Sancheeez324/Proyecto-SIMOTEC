@@ -20,12 +20,11 @@ const TestDashboard = () => {
         }
 
         const userData = JSON.parse(localStorage.getItem("user"));
-        console.log(userData);
-        const userId = userData?.id; // ID del cadmin loggeado
-        console.log(userId);
+        const authUserId = userData?.id; // ID de auth_user
+
         const response = await sendRequest(
-          `${import.meta.env.VITE_API_URL}/assigned-tests/${userId}`,
-          'GET'
+        `${import.meta.env.VITE_API_URL}/assigned-tests/auth-user/${authUserId}`,
+            'GET'
         );
 
         if (response.status === 200) {
