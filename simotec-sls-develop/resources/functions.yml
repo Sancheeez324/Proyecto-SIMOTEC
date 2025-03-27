@@ -156,12 +156,12 @@ functions:
   ########################################
   # REALIZAR TESTS
   ########################################
-  getAssignedTests:
+  getAssignedTestsByAuthId:
     handler: src/maintainers/users-tests/handler.getAssignedTests
     events:
       - httpApi:
-          path: /assigned-tests/{user_id}
-          method: get          
+          path: /assigned-tests/auth-user/{auth_user_id}  # Ruta clara
+          method: get        
 
   # 2. Obtener preguntas de un test
   getTestQuestions:
