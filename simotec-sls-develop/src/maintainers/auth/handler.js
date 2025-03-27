@@ -5,8 +5,7 @@ const { generateResponse } = require("../../utils/utils");
 
 const loginHandler = async (event) => {
     try {
-        const { email, password, role } = JSON.parse(event.body); // 👈 Extraemos correctamente el body
-
+        const { email, password, role } = JSON.parse(event.body);
         console.log("📩 Datos recibidos:", { email, password, role });
 
         if (!email || !password) {
@@ -14,7 +13,6 @@ const loginHandler = async (event) => {
         }
 
         return await queryWithTransaction(async (connection) => {
-            // 1. Buscar en auth_users primero
             const [authUsers] = await connection.execute(
                 "SELECT * FROM auth_users WHERE email = ? ", 
                 [email]
@@ -25,8 +23,6 @@ const loginHandler = async (event) => {
             }
 
             const authUser = authUsers[0];
-            
-            // 2. Verificar coincidencia de rol
             if (authUser.user_type !== role) {
                 return generateResponse(403, { 
                     message: `Ud no es un usuario de tipo ${role}`, 
@@ -37,68 +33,61 @@ const loginHandler = async (event) => {
             console.log("Contraseña ingresada:", password);
             console.log("Hash en la DB:", authUser.password);
 
-            // 3. Validar contraseña
             const isPasswordValid = await bcrypt.compare(password, authUser.password);
             if (!isPasswordValid) {
                 return generateResponse(401, { message: "Invalid credentials" });
             }
 
-            // 4. Obtener datos específicos del rol
-            let userData;
+            let userData, userTableId;
             switch (role) {
                 case 'user':
                     [userData] = await connection.execute(
-                        "SELECT * FROM users WHERE auth_user_id = ?",
+                        "SELECT id FROM users WHERE auth_user_id = ?",
                         [authUser.id]
                     );
                     break;
-                
                 case 'cadmin':
                     [userData] = await connection.execute(
-                        "SELECT * FROM cadmins WHERE auth_user_id = ?",
+                        "SELECT id FROM cadmins WHERE auth_user_id = ?",
                         [authUser.id]
                     );
                     break;
-                
                 case 'super_admin':
                     [userData] = await connection.execute(
-                        "SELECT * FROM super_admins WHERE auth_user_id = ?",
+                        "SELECT id FROM super_admins WHERE auth_user_id = ?",
                         [authUser.id]
                     );
                     break;
-                
                 default:
                     return generateResponse(400, { message: "Invalid role" });
             }
+
             console.log(`🔍 Datos obtenidos para ${role}:`, userData);
             if (userData.length === 0) {
                 return generateResponse(500, { message: "User data inconsistency" });
             }
 
-            // 5. Generar tokens
-            const specificUser = userData[0];
+            userTableId = userData[0].id;
             const accessToken = generateAccessToken({ 
-                id: specificUser.id, 
+                id: userTableId, 
                 authId: authUser.id,
                 role: authUser.user_type 
             });
-            
+
             await generateRefreshToken(authUser.id, connection);
 
             return generateResponse(200, { 
                 token: accessToken, 
                 role: authUser.user_type,
                 user: authUser,
-                userId: specificUser.id,
+                userTableId: userTableId, // ID específico de la tabla
                 authId: authUser.id
             });
         });
-    }catch (error) {
+    } catch (error) {
         console.error("❌ Error en login:", error);
         return generateResponse(500, { message: "Internal server error" });
     }
-
-    
 };
 
 const generateAccessToken = (user) => {
