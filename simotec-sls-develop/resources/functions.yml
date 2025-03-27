@@ -187,6 +187,34 @@ functions:
       - httpApi:
           path: /user-tests/{assigned_test_id}/status
           method: patch
+
+
+
+########################################
+# Psicólogo
+########################################
+
+eceListAssignments:
+  handler: src/maintainers/psicologo/psicologoHandler.listAllECEAssignments
+  events:
+    - httpApi:
+        path: /ece/asignaciones
+        method: get
+
+eceListResponses:
+  handler: src/maintainers/psicologo/psicologoHandler.listECEResponses
+  events:
+    - httpApi:
+        path: /ece/respuestas
+        method: get
+
+eceSubmitManualEvaluation:
+  handler: src/maintainers/psicologo/psicologoHandler.submitManualEvaluation
+  events:
+    - httpApi:
+        path: /ece/evaluar
+        method: post
+
           
     #TESTS
 ##############################
