@@ -16,7 +16,6 @@ module.exports.listECEResponses = async (event) => {
       return generateResponse(400, { message: "Missing test_id or user_id" });
     }
 
-    // Ejecutar la consulta en una transacción
     return await queryWithTransaction(async (connection) => {
       const query = `
         SELECT oa.id, oa.question_id, oa.response_text, q.question_text
@@ -60,19 +59,57 @@ module.exports.submitManualEvaluation = async (event) => {
     const evaluator_id = event.requestContext.authorizer.userId;
 
     return await queryWithTransaction(async (connection) => {
-      // Insertar cada evaluación manual
       for (const evalItem of evaluations) {
         await connection.execute(
           `INSERT INTO manual_evaluations 
             (test_result_id, subdimension_id, evaluation_level, evaluator_comments, evaluator_id)
            VALUES (?, ?, ?, ?, ?)`,
-          [test_result_id, evalItem.subdimension_id, evalItem.evaluation_level, evalItem.evaluator_comments, evaluator_id]
+          [
+            test_result_id,
+            evalItem.subdimension_id,
+            evalItem.evaluation_level,
+            evalItem.evaluator_comments,
+            evaluator_id,
+          ]
         );
       }
       return generateResponse(201, { message: "Evaluation submitted successfully" });
     });
   } catch (error) {
     console.error("Error submitting manual evaluation:", error);
+    return generateResponse(500, { message: "Internal Server Error" });
+  }
+};
+
+/**
+ * Endpoint: GET /ece/asignaciones
+ * Lista todas las asignaciones del test ECE para todos los usuarios.
+ * Esto permite al psicólogo ver todos los tests ECE de todos los usuarios.
+ * Se asume que en la tabla tests el test ECE se identifica por test_name = 'ECE'.
+ */
+module.exports.listAllECEAssignments = async (event) => {
+  try {
+    // Se usa test_name = 'ECE'. Si prefieres usar el id, reemplaza la condición.
+    const testName = "ECE";
+
+    return await queryWithTransaction(async (connection) => {
+      const query = `
+        SELECT at.id AS assigned_id,
+               at.user_id,
+               at.test_id,
+               at.status,
+               u.nombre AS user_name,
+               u.rut AS user_rut,
+               t.test_name
+        FROM assigned_tests at
+        JOIN users u ON at.user_id = u.id
+        JOIN tests t ON at.test_id = t.id
+        WHERE t.test_name = ?`;
+      const [assignments] = await connection.execute(query, [testName]);
+      return generateResponse(200, { assignments });
+    });
+  } catch (error) {
+    console.error("Error listing ECE assignments:", error);
     return generateResponse(500, { message: "Internal Server Error" });
   }
 };
