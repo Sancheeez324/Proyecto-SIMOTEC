@@ -1,13 +1,25 @@
 const db = require("../../config/database");
 const { generateResponse, getFechaChile, parseEventBody } = require("../../utils/utils");
 
+// Función auxiliar para obtener el user_id desde auth_user_id
+const getUserIdFromAuth = async (auth_user_id) => {
+    const [[user]] = await db.query("SELECT id FROM users WHERE auth_user_id = ?", [auth_user_id]);
+    return user ? user.id : null;
+};
+
 // 1. Obtener tests asignados a un usuario
 module.exports.getAssignedTests = async (event) => {
     try {
-        const { user_id } = event.pathParameters;
-        
-        if (!user_id || isNaN(user_id)) {
+        const { auth_user_id } = JSON.parse(event.body);
+        console.log("Auth id recibido ", auth_user_id);
+        if (!auth_user_id || isNaN(auth_user_id)) {
             return generateResponse(400, { message: "ID de usuario inválido" });
+        }
+
+        const user_id = await getUserIdFromAuth(auth_user_id);
+        console.log("user id obtenido ", user_id);
+        if (!user_id) {
+            return generateResponse(404, { message: "Usuario no encontrado" });
         }
 
         const [tests] = await db.query(
@@ -35,75 +47,22 @@ module.exports.getAssignedTests = async (event) => {
     }
 };
 
-// 2. Obtener preguntas y opciones de un test
-module.exports.getTestQuestions = async (event) => {
-    try {
-        const test_id = event.pathParameters?.test_id || event.pathParameters?.['test_id'];        console.log("Test recibido ", test_id);
-        if (!test_id || isNaN(test_id)) {
-            return generateResponse(400, { message: "ID de test inválido" });
-        }
-
-        const [[testExists]] = await db.query(
-            "SELECT id FROM tests WHERE id = ?",
-            [test_id]
-        );
-        
-        if (!testExists) {
-            return generateResponse(404, { message: "Test no encontrado" });
-        }
-
-        const [questions] = await db.query(
-            `SELECT 
-                q.id, 
-                q.question_text, 
-                q.type, 
-                q.sector, 
-                q.weight, 
-                q.image_url,
-                JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                        'id', o.id,
-                        'option_text', o.option_text,
-                        'is_correct', o.is_correct
-                    )
-                ) as options
-             FROM questions q
-             LEFT JOIN options o ON q.id = o.question_id
-             WHERE q.test_id = ?
-             GROUP BY q.id
-             ORDER BY q.id`,
-            [test_id]
-        );
-        
-        if (questions.length === 0) {
-            return generateResponse(404, { message: "No se encontraron preguntas para este test" });
-        }
-
-        const sanitizedQuestions = questions.map(question => {
-            question.options = question.options.map(option => {
-                const { is_correct, ...rest } = option;
-                return rest;
-            });
-            return question;
-        });
-
-        return generateResponse(200, sanitizedQuestions);
-    } catch (error) {
-        console.error("Error al obtener preguntas del test:", error);
-        return generateResponse(500, { message: "Error interno del servidor" });
-    }
-};
-
-// 3. Enviar respuestas del test
+// 2. Enviar respuestas del test
 module.exports.submitTest = async (event) => {
     const transaction = await db.beginTransaction();
     try {
         const { test_id } = event.pathParameters;
-        const { user_id, responses } = parseEventBody(event);
+        const { auth_user_id, responses } = parseEventBody(event);
 
-        if (!user_id || !responses || !Array.isArray(responses)) {
+        if (!auth_user_id || !responses || !Array.isArray(responses)) {
             await transaction.rollback();
             return generateResponse(400, { message: "Datos de entrada inválidos" });
+        }
+
+        const user_id = await getUserIdFromAuth(auth_user_id);
+        if (!user_id) {
+            await transaction.rollback();
+            return generateResponse(404, { message: "Usuario no encontrado" });
         }
 
         const [[test]] = await transaction.query(
@@ -193,41 +152,6 @@ module.exports.submitTest = async (event) => {
     } catch (error) {
         await transaction.rollback();
         console.error("Error al procesar respuestas del test:", error);
-        return generateResponse(500, { message: "Error interno del servidor" });
-    }
-};
-
-// 4. Actualizar estado del test asignado
-module.exports.updateTestStatus = async (event) => {
-    const transaction = await db.beginTransaction();
-    try {
-        const { assigned_test_id } = event.pathParameters;
-        const { status } = parseEventBody(event);
-
-        const allowedStatuses = ['pendiente', 'completado', 'reiniciado'];
-        if (!allowedStatuses.includes(status)) {
-            await transaction.rollback();
-            return generateResponse(400, { message: "Estado no válido" });
-        }
-
-        const [result] = await transaction.query(
-            `UPDATE assigned_tests 
-             SET status = ?,
-                 start_time = IF(status = 'pendiente' AND ? = 'reiniciado', ?, start_time)
-             WHERE id = ?`,
-            [status, status, getFechaChile(null, true), assigned_test_id]
-        );
-
-        if (result.affectedRows === 0) {
-            await transaction.rollback();
-            return generateResponse(404, { message: "Test asignado no encontrado" });
-        }
-
-        await transaction.commit();
-        return generateResponse(200, { message: "Estado del test actualizado" });
-    } catch (error) {
-        await transaction.rollback();
-        console.error("Error al actualizar estado del test:", error);
         return generateResponse(500, { message: "Error interno del servidor" });
     }
 };

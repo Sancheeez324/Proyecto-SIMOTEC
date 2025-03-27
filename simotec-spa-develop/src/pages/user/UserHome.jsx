@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { sendRequest } from "../../utils/axios";
+import { Link } from "react-router-dom";
 
 // TODO:
 // 1. Crear una request para saber si el usuario tiene evaluaciones pendientes
@@ -48,7 +49,7 @@ const UserHome = () => {
         <Col>
           <h3>PENDIENTES</h3>
           <p>Evaluaciones por realizar</p>
-          <Button variant="primary">
+          <Button as={Link} to="/tests" variant="primary">
             Realizar Evaluaciones{" "}
             {pendingTests.length > 0 ? `(${pendingTests.length})` : ""}{" 0 "}
           </Button>
