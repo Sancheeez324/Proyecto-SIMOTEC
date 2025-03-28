@@ -54,38 +54,26 @@ module.exports.getAssignedTests = async (event) => {
 };
 
 // 2. Enviar respuestas del test
+// 2. Enviar respuestas del test (modificado para usar datos guardados)
 module.exports.submitTest = async (event) => {
     try {
         return await queryWithTransaction(async (connection) => {
             const { test_id } = event.pathParameters;
-            const { auth_user_id, responses, selected_question_ids } = parseEventBody(event); // Nuevo campo
+            const { auth_user_id, responses } = parseEventBody(event);
 
             // Validaciones básicas
-            if (!auth_user_id || !responses || !Array.isArray(responses) || !selected_question_ids) {
+            if (!auth_user_id || !responses || !Array.isArray(responses)) {
                 return generateResponse(400, { message: "Datos de entrada inválidos" });
             }
-
-            // Verificar que las preguntas respondidas pertenecen a las seleccionadas
-            const invalidQuestions = responses.filter(r => 
-                !selected_question_ids.includes(r.question_id)
-            );
-            
-            if (invalidQuestions.length > 0) {
-                return generateResponse(400, { 
-                    message: "Algunas preguntas no pertenecen a este test",
-                    invalid_questions: invalidQuestions.map(q => q.question_id)
-                });
-            }
-
 
             const user_id = await getUserIdFromAuth(connection, auth_user_id);
             if (!user_id) {
                 return generateResponse(404, { message: "Usuario no encontrado" });
             }
 
-            // Verificar test asignado
+            // Obtener test asignado con las preguntas seleccionadas
             const [[test]] = await connection.query(
-                `SELECT at.id as assigned_test_id, t.passing_score
+                `SELECT at.id as assigned_test_id, t.passing_score, at.selected_questions
                  FROM assigned_tests at
                  JOIN tests t ON at.test_id = t.id
                  WHERE t.id = ? AND at.user_id = ?`,
@@ -96,7 +84,20 @@ module.exports.submitTest = async (event) => {
                 return generateResponse(404, { message: "Test no encontrado o no asignado" });
             }
 
-            // Procesar respuestas
+            // Verificar que las preguntas respondidas pertenecen a las seleccionadas
+            const selectedQuestions = test.selected_questions ? JSON.parse(test.selected_questions) : [];
+            const invalidQuestions = responses.filter(r => 
+                !selectedQuestions.includes(r.question_id)
+            );
+            
+            if (invalidQuestions.length > 0) {
+                return generateResponse(400, { 
+                    message: "Algunas preguntas no pertenecen a este test",
+                    invalid_questions: invalidQuestions.map(q => q.question_id)
+                });
+            }
+
+            // Procesar respuestas (igual que antes)
             let totalScore = 0;
             let totalWeight = 0;
             const questionIds = responses.map(r => r.question_id);
@@ -141,7 +142,7 @@ module.exports.submitTest = async (event) => {
             // Actualizar test asignado
             await connection.query(
                 `UPDATE assigned_tests 
-                 SET status = ?, score = ?, completed_at = ?
+                 SET status = ?, score = ?, completed_at = ?, answers = NULL, progress = 100
                  WHERE id = ?`,
                 [newStatus, finalScore, getFechaChile(null, true), test.assigned_test_id]
             );
@@ -167,103 +168,72 @@ module.exports.submitTest = async (event) => {
 
 // Obtener las preguntas de los tests
 // 3. Obtener preguntas de un test
-module.exports.getTestQuestions = async (event) => {
+module.exports.saveTestProgress = async (event) => {
     try {
         return await queryWithTransaction(async (connection) => {
             const { test_id } = event.pathParameters;
-            const auth_user_id = event.queryStringParameters?.auth_user_id;
+            const { auth_user_id, answers, current_question } = parseEventBody(event);
 
             // Validaciones básicas
-            if (!test_id || isNaN(test_id)) {
-                return generateResponse(400, { message: "ID de test inválido" });
+            if (!auth_user_id || !answers || typeof answers !== 'object') {
+                return generateResponse(400, { message: "Datos de entrada inválidos" });
             }
 
-            if (!auth_user_id) {
-                return generateResponse(400, { message: "Se requiere auth_user_id" });
-            }
-
-            // Verificar que el test está asignado al usuario
             const user_id = await getUserIdFromAuth(connection, auth_user_id);
-            const [[assignment]] = await connection.query(
+            if (!user_id) {
+                return generateResponse(404, { message: "Usuario no encontrado" });
+            }
+
+            // Verificar test asignado
+            const [[test]] = await connection.query(
                 `SELECT id FROM assigned_tests 
                  WHERE test_id = ? AND user_id = ? AND status IN ('pendiente', 'reiniciado')`,
                 [test_id, user_id]
             );
-
-            if (!assignment) {
-                return generateResponse(403, { message: "Test no asignado o ya completado" });
+            
+            if (!test) {
+                return generateResponse(404, { message: "Test no encontrado o no asignado" });
             }
 
-            // Paso 1: Obtener el TOTAL de preguntas disponibles para este test
-            const [[{ total_questions }]] = await connection.query(
-                `SELECT COUNT(*) as total_questions FROM questions 
-                 WHERE test_id = ?`,
-                [test_id]
-            );
-
-            // Paso 2: Seleccionar 20 IDs de preguntas aleatorias
-            const [randomQuestions] = await connection.query(
-                `SELECT id FROM questions 
-                 WHERE test_id = ?
-                 ORDER BY RAND()  /* Función aleatoria específica de MySQL */
-                 LIMIT 20`,
-                [test_id]
-            );
-
-            // Si no hay suficientes preguntas
-            if (randomQuestions.length === 0) {
-                return generateResponse(404, { message: "No hay preguntas disponibles para este test" });
+            // Calcular progreso (basado en la pregunta actual o respuestas)
+            let progress = 0;
+            if (current_question) {
+                // Obtener total de preguntas seleccionadas
+                const [[{ question_count }]] = await connection.query(
+                    `SELECT JSON_LENGTH(selected_questions) as question_count 
+                     FROM assigned_tests 
+                     WHERE id = ?`,
+                    [test.id]
+                );
+                
+                progress = Math.floor((current_question / question_count) * 100);
+            } else {
+                // Calcular progreso basado en respuestas
+                progress = Math.floor((Object.keys(answers).length / 20) * 100);
             }
 
-            const questionIds = randomQuestions.map(q => q.id);
-
-            // Paso 3: Obtener las preguntas seleccionadas con sus opciones
-            const [questions] = await connection.query(
-                `SELECT 
-                    q.id,
-                    q.question_text,
-                    q.type,
-                    q.weight,
-                    q.sector,
-                    q.image_url,
-                    JSON_ARRAYAGG(
-                        JSON_OBJECT(
-                            'id', o.id,
-                            'option_text', o.option_text,
-                            'is_correct', o.is_correct
-                        )
-                    ) as options
-                 FROM questions q
-                 LEFT JOIN options o ON q.id = o.question_id
-                 WHERE q.id IN (?)
-                 GROUP BY q.id
-                 ORDER BY FIELD(q.id, ?)  /* Mantener el orden aleatorio */`,
-                [questionIds, questionIds]
+            // Actualizar progreso y respuestas
+            await connection.query(
+                `UPDATE assigned_tests 
+                 SET answers = ?, progress = ?
+                 WHERE id = ?`,
+                [JSON.stringify(answers), progress, test.id]
             );
 
-            // Formatear respuesta
-            const formattedQuestions = questions.map(q => ({
-                ...q,
-                options: q.options ? q.options.filter(opt => opt !== null) : [],
-                metadata: {
-                    total_questions: total_questions,
-                    questions_selected: questions.length
-                }
-            }));
-
-            return generateResponse(200, {
-                questions: formattedQuestions,
-                assigned_test_id: assignment.id
+            return generateResponse(200, { 
+                message: "Progreso guardado",
+                progress: progress
             });
         });
     } catch (error) {
-        console.error("Error en getTestQuestions:", error);
+        console.error("Error en saveTestProgress:", error);
         return generateResponse(500, { 
-            message: "Error al obtener preguntas",
+            message: "Error al guardar progreso",
             error: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
 };
+
 //Obtener test especifico por ID
 // Obtener un test asignado específico por su ID
 module.exports.getAssignedTestById = async (event) => {
@@ -319,6 +289,176 @@ module.exports.getAssignedTestById = async (event) => {
         });
         return generateResponse(500, { 
             message: "Error interno del servidor",
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+};
+// 3. Obtener preguntas de un test (versión corregida)
+module.exports.getTestQuestions = async (event) => {
+    try {
+        return await queryWithTransaction(async (connection) => {
+            const { test_id } = event.pathParameters;
+            const auth_user_id = event.queryStringParameters?.auth_user_id;
+
+            // Validaciones básicas
+            if (!test_id || isNaN(test_id)) {
+                return generateResponse(400, { message: "ID de test inválido" });
+            }
+
+            if (!auth_user_id) {
+                return generateResponse(400, { message: "Se requiere auth_user_id" });
+            }
+
+            // Verificar que el test está asignado al usuario
+            const user_id = await getUserIdFromAuth(connection, auth_user_id);
+            const [[assignment]] = await connection.query(
+                `SELECT id, selected_questions, answers, progress 
+                 FROM assigned_tests 
+                 WHERE test_id = ? AND user_id = ? AND status IN ('pendiente', 'reiniciado')`,
+                [test_id, user_id]
+            );
+
+            if (!assignment) {
+                return generateResponse(403, { message: "Test no asignado o ya completado" });
+            }
+
+            let questionIds = [];
+            let questions = [];
+            let total_questions = 0;
+
+            // Función para parsear de forma segura el JSON
+            const safeParseJSON = (jsonString) => {
+                try {
+                    return jsonString ? JSON.parse(jsonString) : null;
+                } catch (e) {
+                    console.error("Error parsing JSON:", jsonString, e);
+                    return null;
+                }
+            };
+
+            // Si ya hay preguntas seleccionadas, intentar usarlas
+            const savedQuestions = safeParseJSON(assignment.selected_questions);
+            if (savedQuestions && Array.isArray(savedQuestions)){
+                questionIds = savedQuestions;
+                
+                // Obtener el total de preguntas disponibles
+                const [[{ total }]] = await connection.query(
+                    `SELECT COUNT(*) as total FROM questions WHERE test_id = ?`,
+                    [test_id]
+                );
+                total_questions = total;
+                
+                // Obtener las preguntas guardadas
+                [questions] = await connection.query(
+                    `SELECT 
+                        q.id,
+                        q.question_text,
+                        q.type,
+                        q.weight,
+                        q.sector,
+                        q.image_url,
+                        JSON_ARRAYAGG(
+                            JSON_OBJECT(
+                                'id', o.id,
+                                'option_text', o.option_text,
+                                'is_correct', o.is_correct
+                            )
+                        ) as options
+                     FROM questions q
+                     LEFT JOIN options o ON q.id = o.question_id
+                     WHERE q.id IN (?)
+                     GROUP BY q.id
+                     ORDER BY FIELD(q.id, ?)`,
+                    [questionIds, questionIds]
+                );
+            } else {
+                // Paso 1: Obtener el TOTAL de preguntas disponibles para este test
+                const [[{ total }]] = await connection.query(
+                    `SELECT COUNT(*) as total FROM questions WHERE test_id = ?`,
+                    [test_id]
+                );
+                total_questions = total;
+
+                // Paso 2: Seleccionar 20 IDs de preguntas aleatorias
+                const [randomQuestions] = await connection.query(
+                    `SELECT id FROM questions 
+                     WHERE test_id = ?
+                     ORDER BY RAND()
+                     LIMIT 20`,
+                    [test_id]
+                );
+
+                if (randomQuestions.length === 0) {
+                    return generateResponse(404, { message: "No hay preguntas disponibles para este test" });
+                }
+
+                questionIds = randomQuestions.map(q => q.id);
+
+                // Guardar la selección en la base de datos como JSON válido
+                await connection.query(
+                    `UPDATE assigned_tests 
+                     SET selected_questions = ?, start_time = ?, progress = 0
+                     WHERE id = ?`,
+                    [JSON.stringify(questionIds), getFechaChile(null, true), assignment.id]
+                );
+
+                // Paso 3: Obtener las preguntas seleccionadas con sus opciones
+                [questions] = await connection.query(
+                    `SELECT 
+                        q.id,
+                        q.question_text,
+                        q.type,
+                        q.weight,
+                        q.sector,
+                        q.image_url,
+                        JSON_ARRAYAGG(
+                            JSON_OBJECT(
+                                'id', o.id,
+                                'option_text', o.option_text,
+                                'is_correct', o.is_correct
+                            )
+                        ) as options
+                     FROM questions q
+                     LEFT JOIN options o ON q.id = o.question_id
+                     WHERE q.id IN (?)
+                     GROUP BY q.id
+                     ORDER BY FIELD(q.id, ?)`,
+                    [questionIds, questionIds]
+                );
+            }
+
+            // Formatear respuesta
+            const formattedQuestions = questions.map(q => ({
+                ...q,
+                options: q.options ? q.options.filter(opt => opt !== null) : [],
+                metadata: {
+                    total_questions: total_questions,
+                    questions_selected: questions.length
+                }
+            }));
+
+            // Si hay respuestas guardadas, aplicarlas
+            let savedAnswers = {};
+            const parsedAnswers = safeParseJSON(assignment.answers);
+            if (parsedAnswers && typeof parsedAnswers === 'object') {
+                savedAnswers = parsedAnswers;
+            }
+
+            return generateResponse(200, {
+                questions: formattedQuestions,
+                assigned_test_id: assignment.id,
+                saved_answers: savedAnswers,
+                progress: assignment.progress || 0
+            });
+        });
+    } catch (error) {
+        console.error("Error en getTestQuestions:", {
+            message: error.message,
+            stack: error.stack,
+            sql: error.sql
+        });
+        return generateResponse(500, { 
+            message: "Error al obtener preguntas",
             error: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }

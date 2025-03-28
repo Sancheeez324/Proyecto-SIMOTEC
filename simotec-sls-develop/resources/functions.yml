@@ -201,6 +201,14 @@ functions:
           path: /user-tests/{assigned_test_id}/status
           method: patch
 
+  # 5. Guardar el progreso del test
+  saveTestProgress:
+    handler: src/maintainers/users-test/handler.saveTestProgress
+    events:
+      - httpApi:
+          path: /user-test/{assigned_test_id}/saveProgress
+          method: post
+
 ########################################
 # Psicólogo
 ########################################
