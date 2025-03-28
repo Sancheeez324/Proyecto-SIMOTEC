@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, Button, Row, Col, Container, Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import "./psicologoDashboard.css"; // Asegúrate de que la ruta sea correcta
 import logoSimotec from "../../fotos/IconSinFondo.png";
 import logoEcos from "../../fotos/Icon2SinFondo.png";
 
@@ -18,7 +19,7 @@ const PsicologoDashboard = () => {
           throw new Error("No se encontró token de autenticación");
         }
 
-        // Se asume que el endpoint /assigned-tests/count retorna el número
+        // Se asume que el endpoint /ece/assigned-tests/count retorna el número
         // de usuarios únicos con el test ECE asignado.
         const testsRes = await fetch(
           `${import.meta.env.VITE_API_URL}/ece/assigned-tests/count`,
@@ -28,7 +29,7 @@ const PsicologoDashboard = () => {
               Authorization: `Bearer ${token}`,
             },
           }
-        );        
+        );
         if (!testsRes.ok) {
           throw new Error("Error al cargar conteo de tests asignados");
         }
@@ -90,41 +91,6 @@ const PsicologoDashboard = () => {
         </div>
         <div className="green-bar"></div>
       </div>
-
-      <style jsx>{`
-        .header {
-          display: flex;
-          align-items: center;
-          padding: 10px 20px;
-        }
-        .logo-container {
-          display: flex;
-          align-items: flex-start;
-        }
-        .logo-simotec {
-          width: 70px;
-          height: auto;
-        }
-        .footer {
-          width: 100%;
-          position: relative;
-          bottom: 0;
-          text-align: center;
-          margin-top: auto;
-        }
-        .ecos-logo {
-          margin-bottom: 5px;
-        }
-        .footer-logo {
-          height: 30px;
-          width: auto;
-        }
-        .green-bar {
-          background-color: #7ed957;
-          height: 40px;
-          width: 100%;
-        }
-      `}</style>
     </div>
   );
 };
