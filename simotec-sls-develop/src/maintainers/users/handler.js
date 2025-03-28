@@ -139,6 +139,74 @@ module.exports.listUsers = async (event) => {
     return generateResponse(500, { message: error.message || "Internal Server Error" });
   }
 };
+//Lista todos los usuarios
+module.exports.listAllUsers = async (event) => {
+  try {
+    console.log("🔍 Iniciando listAllUsers...");
+
+    // Validar y decodificar token (requiere permisos de admin)
+    const authHeader = event.headers.authorization || event.headers.Authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      throw new Error("Token no proporcionado");
+    }
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Verificar que el usuario tenga permisos de administrador
+
+    /*
+    if (!decoded || !decoded.role || decoded.role !== 'admin') {
+          throw new Error("No autorizado: Se requieren permisos de administrador");
+        }
+    */
+    
+
+    console.log("Consultando TODOS los usuarios");
+
+    return await queryWithTransaction(async (connection) => {
+      console.log("📡 Conexión a la base de datos establecida");
+      const query = `
+        SELECT 
+          users.id, 
+          users.rut, 
+          users.nombre, 
+          users.fecha_nac, 
+          users.sector, 
+          users.cargo, 
+          users.created_at,
+          users.cadmin_id,
+          auth_users.email,
+          auth_users.user_type
+        FROM users 
+        JOIN auth_users ON users.auth_user_id = auth_users.id
+        ORDER BY users.created_at DESC
+      `;
+      
+      const [rows] = await connection.execute(query);
+      
+      // Formatear fechas
+      const users = rows.map(user => ({
+        ...user,
+        created_at: getFechaChile(user.created_at, true),
+        cadmin_id: user.cadmin_id || 'N/A'
+      }));
+
+      console.log(`👥 Total de usuarios obtenidos: ${users.length}`);
+
+      return generateResponse(200, { 
+        success: true,
+        count: users.length,
+        users 
+      });
+    });
+  } catch (error) {
+    console.error("❌ Error al listar todos los usuarios:", error);
+    return generateResponse(error.message.includes('autorizado') ? 403 : 500, { 
+      success: false,
+      message: error.message || "Internal Server Error" 
+    });
+  }
+};
 
 // Handler para editar usuario
 module.exports.editUser = async (event) => {

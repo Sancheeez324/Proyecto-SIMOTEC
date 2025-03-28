@@ -20,34 +20,65 @@ const TakeTest = () => {
     const fetchTestData = async () => {
       try {
         const token = localStorage.getItem('token');
+        const userData = JSON.parse(localStorage.getItem('user'));
+        const auth_user_id = userData?.id;
+
+        // 1. Obtener información del test asignado
+        const testRes = await fetch(
+          `${import.meta.env.VITE_API_URL}/assigned-tests/${assigned_test_id}`,
+          {
+            headers: { 
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
         
-        const testRes = await fetch(`${import.meta.env.VITE_API_URL}/assigned-tests/${assigned_test_id}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        if (!testRes.ok) {
+          const errorData = await testRes.json().catch(() => ({}));
+          throw new Error(errorData.message || 'Error al cargar el test');
+        }
         
-        if (!testRes.ok) throw new Error('Error al cargar test');
         const testData = await testRes.json();
+        console.log("Datos del test recibidos:", testData);
         
         setTestInfo(testData);
         setTimeLeft(testData.duration_minutes * 60);
+
+        // 2. Obtener preguntas del test
+        const questionsRes = await fetch(
+          `${import.meta.env.VITE_API_URL}/user-tests/${testData.test_id}/questions?auth_user_id=${auth_user_id}`,
+          {
+            headers: { 
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
         
-        const questionsRes = await fetch(`${import.meta.env.VITE_API_URL}/user-tests/${testData.test_id}/questions`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        if (!questionsRes.ok) {
+          const errorData = await questionsRes.json().catch(() => ({}));
+          throw new Error(errorData.message || 'Error al cargar preguntas');
+        }
         
-        if (!questionsRes.ok) throw new Error('Error al cargar preguntas');
         const questionsData = await questionsRes.json();
+        console.log("Preguntas recibidas:", questionsData);
         
-        setQuestions(questionsData);
+        setQuestions(questionsData.questions || questionsData);
+        
       } catch (err) {
-        setError(err.message);
+        console.error("Error en fetchTestData:", {
+          message: err.message,
+          stack: err.stack
+        });
+        setError(err.message || "Error desconocido al cargar datos");
       } finally {
         setLoading(false);
       }
     };
 
     fetchTestData();
-  }, [assigned_test_id]);
+}, [assigned_test_id]);
 
   useEffect(() => {
     if (!timeLeft) return;

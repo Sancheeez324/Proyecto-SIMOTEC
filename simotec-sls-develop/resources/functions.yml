@@ -10,6 +10,12 @@ functions:
       - httpApi:
           path: /users
           method: get
+  listAllUsers:
+    handler: src/maintainers/users/handler.listAllUsers
+    events:
+      - httpApi:
+          path: /users/all
+          method: get
   createUser:
     handler: src/maintainers/users/handler.createUser
     events:
@@ -195,34 +201,32 @@ functions:
           path: /user-tests/{assigned_test_id}/status
           method: patch
 
-
-
 ########################################
 # Psicólogo
 ########################################
 
-eceListAssignments:
-  handler: src/maintainers/psicologo/psicologoHandler.listAllECEAssignments
-  events:
-    - httpApi:
-        path: /ece/asignaciones
-        method: get
+  eceListAssignments:
+    handler: src/maintainers/psicologo/psicologoHandler.listAllECEAssignments
+    events:
+      - httpApi:
+          path: /ece/asignaciones
+          method: get
 
-eceListResponses:
-  handler: src/maintainers/psicologo/psicologoHandler.listECEResponses
-  events:
-    - httpApi:
-        path: /ece/respuestas
-        method: get
+  eceListResponses:
+    handler: src/maintainers/psicologo/psicologoHandler.listECEResponses
+    events:
+      - httpApi:
+          path: /ece/respuestas
+          method: get
 
-eceSubmitManualEvaluation:
-  handler: src/maintainers/psicologo/psicologoHandler.submitManualEvaluation
-  events:
-    - httpApi:
-        path: /ece/evaluar
-        method: post
+  eceSubmitManualEvaluation:
+    handler: src/maintainers/psicologo/psicologoHandler.submitManualEvaluation
+    events:
+      - httpApi:
+          path: /ece/evaluar
+          method: post
 
-          
+##############################
     #Asignar tests
 ##############################
   getTests:

@@ -13,7 +13,7 @@ export default function psicologoDashboard() {
 
   // Función para obtener todos los usuarios (sin filtrar por cadmin)
   const fetchUsers = async (token) => {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/users`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/users/all`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
