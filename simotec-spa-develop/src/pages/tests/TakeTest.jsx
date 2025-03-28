@@ -11,8 +11,10 @@ const TakeTest = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [testInfo, setTestInfo] = useState(null);
+  const [selectedQuestionIds, setSelectedQuestionIds] = useState([]); // Nuevo estado para guardar los IDs de preguntas seleccionadas
+  const [totalQuestions, setTotalQuestions] = useState(0); // Nuevo estado para el total de preguntas disponibles
   
-  // Temporizador rescatado de TestComponent.jsx
+  // Temporizador
   const [timeLeft, setTimeLeft] = useState(0);
   const timeInRed = timeLeft <= 60;
 
@@ -45,7 +47,7 @@ const TakeTest = () => {
         setTestInfo(testData);
         setTimeLeft(testData.duration_minutes * 60);
 
-        // 2. Obtener preguntas del test
+        // 2. Obtener preguntas del test (20 aleatorias)
         const questionsRes = await fetch(
           `${import.meta.env.VITE_API_URL}/user-tests/${testData.test_id}/questions?auth_user_id=${auth_user_id}`,
           {
@@ -65,6 +67,8 @@ const TakeTest = () => {
         console.log("Preguntas recibidas:", questionsData);
         
         setQuestions(questionsData.questions || questionsData);
+        setSelectedQuestionIds(questionsData.questions.map(q => q.id)); // Guardar IDs de preguntas seleccionadas
+        setTotalQuestions(questionsData.questions[0]?.metadata?.total_questions || 0); // Guardar total de preguntas
         
       } catch (err) {
         console.error("Error en fetchTestData:", {
@@ -78,7 +82,7 @@ const TakeTest = () => {
     };
 
     fetchTestData();
-}, [assigned_test_id]);
+  }, [assigned_test_id]);
 
   useEffect(() => {
     if (!timeLeft) return;
@@ -110,16 +114,21 @@ const TakeTest = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
+      const userData = JSON.parse(localStorage.getItem('user'));
       
       const response = await sendRequest(
         `${import.meta.env.VITE_API_URL}/user-tests/${testInfo.test_id}/submit`,
         'POST',
         {
-          user_id: testInfo.user_id,
+          auth_user_id: userData.id, // Cambiado de user_id a auth_user_id
           responses: Object.entries(answers).map(([questionId, selectedOptions]) => ({
             question_id: parseInt(questionId),
             selected_options: Array.isArray(selectedOptions) ? selectedOptions : [selectedOptions]
-          }))
+          })),
+          selected_question_ids: selectedQuestionIds // Enviar los IDs de preguntas seleccionadas
+        },
+        {
+          'Authorization': `Bearer ${token}`
         }
       );
 
@@ -148,7 +157,14 @@ const TakeTest = () => {
         backgroundColor: '#f8f9fa',
         borderRadius: '8px'
       }}>
-        <h2 style={{ margin: 0 }}>{testInfo?.test_name}</h2>
+        <div>
+          <h2 style={{ margin: 0 }}>{testInfo?.test_name}</h2>
+          {totalQuestions > 0 && (
+            <small className="text-muted">
+              Mostrando 20 de {totalQuestions} preguntas disponibles
+            </small>
+          )}
+        </div>
         <div style={{
           backgroundColor: timeInRed ? '#e74c3c' : '#3498db',
           color: 'white',
