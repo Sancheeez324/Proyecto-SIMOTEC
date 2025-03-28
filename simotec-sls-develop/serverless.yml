@@ -1,37 +1,14 @@
-service: simotec-sls
-frameworkVersion: "4"
-
-custom:
-  #customDomain:
-  #  domainName: ${env:AWS_DOMAIN_NAME}
-  #  basePath: ""
-  #  stage: ${self:provider.stage}
-  #  createRoute53Record: true
-  # endpointType: regional
-  #  certificateArn: ${env:AWS_CERTIFICATE_ARN}
-
-#plugins:
-#  - serverless-offline
-
 provider:
   name: aws
   runtime: nodejs20.x
   timeout: 20
   memorySize: 3000 
-  stage: ${opt:stage, 'dev'}
+  # stage: ${opt:stage, 'dev'}  # Comentado o puedes dejar stage: ""
+  stage: ""
   region: us-east-2
   tags:
     CLIENT: simotec
     STAGE: ${self:provider.stage}
-  
-  #Revisar  
-  #vpc:
-  #  securityGroupIds:
-  #    - sg-0277c381fd928a03b   # Tu Security Group que permite acceso a RDS
-  #  subnetIds:
-  #    - subnet-02b7e739c70cb25e4
-  #    - subnet-0898275b12331b159
-  #    - subnet-06e6d01dc93ae602a
   httpApi:
     cors:
       allowedOrigins:
@@ -51,7 +28,6 @@ provider:
     DB_USER: ${env:DB_USER}
     DB_PASSWORD: ${env:DB_PASSWORD}
     DB_NAME: ${env:DB_NAME}
-    #DB_SSL_CA: ${env:DB_SSL_CA}
     JWT_SECRET: ${env:JWT_SECRET}
     JWT_EXPIRES_IN: ${env:JWT_EXPIRES_IN}
     CORS_ORIGIN: ${env:CORS_ORIGIN}

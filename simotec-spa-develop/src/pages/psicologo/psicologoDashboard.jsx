@@ -4,21 +4,21 @@ import { useNavigate } from "react-router-dom";
 import logoSimotec from "../../fotos/IconSinFondo.png";
 import logoEcos from "../../fotos/Icon2SinFondo.png";
 
-const PsicologoDashboard = () => {
+export default function psicologoDashboard() {
   const [users, setUsers] = useState([]);
   const [assignedTests, setAssignedTests] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
-  // 1) Función para obtener todos los usuarios
+  // Función para obtener todos los usuarios (sin filtrar por cadmin)
   const fetchUsers = async (token) => {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/users`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
     if (!response.ok) {
       throw new Error("Error al cargar usuarios");
@@ -27,24 +27,24 @@ const PsicologoDashboard = () => {
     return data.users || [];
   };
 
-  // 2) Función para obtener tests asignados (o filtrar solo ECE si tu endpoint lo permite)
+  // Función para obtener las asignaciones del test ECE
   const fetchAssignedTests = async (token) => {
-    // Ajusta la ruta de tu endpoint para assigned-tests
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/assigned-tests`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/ece/asignaciones`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
     if (!response.ok) {
       throw new Error("Error al cargar tests asignados");
     }
     const data = await response.json();
-    return data.assignedTests || [];
+    // El handler devuelve { assignments: [...] }
+    return data.assignments || [];
   };
 
-  // 3) Cargar usuarios y tests asignados
+  // Cargar usuarios y asignaciones de forma paralela
   const loadData = async () => {
     setIsLoading(true);
     setErrorMessage("");
@@ -53,12 +53,12 @@ const PsicologoDashboard = () => {
       if (!token) {
         throw new Error("No se encontró token de autenticación");
       }
-      const [allUsers, allAssignedTests] = await Promise.all([
+      const [allUsers, allAssignments] = await Promise.all([
         fetchUsers(token),
-        fetchAssignedTests(token),
+        fetchAssignedTests(token)
       ]);
       setUsers(allUsers);
-      setAssignedTests(allAssignedTests);
+      setAssignedTests(allAssignments);
     } catch (error) {
       console.error("Error al cargar datos:", error);
       setErrorMessage(error.message || "Error al cargar datos");
@@ -67,22 +67,17 @@ const PsicologoDashboard = () => {
     }
   };
 
-  // 4) useEffect para cargar los datos al montar el componente
   useEffect(() => {
     loadData();
   }, []);
 
-  // 5) Función para verificar si un usuario tiene el test ECE asignado
-  //    Ajusta el ID del test ECE si en tu BD es distinto de 5
+  // Verifica si un usuario tiene asignado el test ECE (asumiendo que test_id = 5)
   const hasECEAssigned = (userId) => {
-    return assignedTests.some(
-      (t) => t.user_id === userId && t.test_id === 5 // test_id=5 => ECE
-    );
+    return assignedTests.some((t) => t.user_id === userId && t.test_id === 5);
   };
 
-  // 6) Navegar a la ruta de revisión de ECE
+  // Navegar a la ruta de revisión del test ECE
   const handleReviewECE = (userId) => {
-    // Ajusta la ruta según tu lógica
     navigate(`/psicologo/respuestas?test_id=5&user_id=${userId}`);
   };
 
@@ -99,7 +94,6 @@ const PsicologoDashboard = () => {
       <Container className="mt-5 flex-grow-1">
         <h1 className="mb-4 text-center">Dashboard Psicólogo</h1>
         <h4 className="mb-4">Usuarios Registrados</h4>
-
         {isLoading ? (
           <div className="d-flex justify-content-center">
             <Spinner animation="border" />
@@ -129,7 +123,6 @@ const PsicologoDashboard = () => {
                     <td>{user.sector}</td>
                     <td>{user.cargo}</td>
                     <td>
-                      {/* Mostrar botón Revisar ECE solo si tiene ECE asignado */}
                       {canReviewECE ? (
                         <Button
                           variant="primary"
@@ -194,6 +187,4 @@ const PsicologoDashboard = () => {
       `}</style>
     </div>
   );
-};
-
-export default PsicologoDashboard;
+}
