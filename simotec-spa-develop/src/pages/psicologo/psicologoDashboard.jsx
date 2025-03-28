@@ -1,85 +1,69 @@
-import React, { useState, useEffect } from "react";
-import { Table, Button, Spinner, Alert, Container } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Card, Button, Row, Col, Container, Alert } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import logoSimotec from "../../fotos/IconSinFondo.png";
 import logoEcos from "../../fotos/Icon2SinFondo.png";
 
-export default function psicologoDashboard() {
-  const [users, setUsers] = useState([]);
-  const [assignedTests, setAssignedTests] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const navigate = useNavigate();
-
-  // Función para obtener todos los usuarios (sin filtrar por cadmin)
-  const fetchUsers = async (token) => {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/users`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      }
-    });
-    if (!response.ok) {
-      throw new Error("Error al cargar usuarios");
-    }
-    const data = await response.json();
-    return data.users || [];
-  };
-
-  // Función para obtener las asignaciones del test ECE
-  const fetchAssignedTests = async (token) => {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/ece/asignaciones`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      }
-    });
-    if (!response.ok) {
-      throw new Error("Error al cargar tests asignados");
-    }
-    const data = await response.json();
-    // El handler devuelve { assignments: [...] }
-    return data.assignments || [];
-  };
-
-  // Cargar usuarios y asignaciones de forma paralela
-  const loadData = async () => {
-    setIsLoading(true);
-    setErrorMessage("");
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("No se encontró token de autenticación");
-      }
-      const [allUsers, allAssignments] = await Promise.all([
-        fetchUsers(token),
-        fetchAssignedTests(token)
-      ]);
-      setUsers(allUsers);
-      setAssignedTests(allAssignments);
-    } catch (error) {
-      console.error("Error al cargar datos:", error);
-      setErrorMessage(error.message || "Error al cargar datos");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+const PsicologoDashboard = () => {
+  const [assignedTestsCount, setAssignedTestsCount] = useState(0);
+  const [userCount, setUserCount] = useState(0);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState({
+    users: true,
+    tests: true,
+  });
 
   useEffect(() => {
-    loadData();
+    // Ejemplo: cargar conteo de usuarios y de tests asignados
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("No se encontró token de autenticación");
+        }
+
+        // 1) Cargar número de usuarios (puede ser el mismo endpoint o uno diferente)
+        const usersRes = await fetch(
+          `${import.meta.env.VITE_API_URL}/users-count`, 
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!usersRes.ok) {
+          throw new Error("Error al cargar conteo de usuarios");
+        }
+        const usersData = await usersRes.json();
+        setUserCount(usersData.count);
+        
+        // 2) Cargar conteo de tests asignados
+        const testsRes = await fetch(
+          `${import.meta.env.VITE_API_URL}/assigned-tests/count`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!testsRes.ok) {
+          throw new Error("Error al cargar conteo de tests asignados");
+        }
+        const testsData = await testsRes.json();
+        setAssignedTestsCount(testsData.count);
+
+      } catch (err) {
+        console.error("Error detallado:", err);
+        setError(err.message || "Error desconocido al obtener datos");
+      } finally {
+        setLoading({ users: false, tests: false });
+      }
+    };
+
+    fetchData();
   }, []);
-
-  // Verifica si un usuario tiene asignado el test ECE (asumiendo que test_id = 5)
-  const hasECEAssigned = (userId) => {
-    return assignedTests.some((t) => t.user_id === userId && t.test_id === 5);
-  };
-
-  // Navegar a la ruta de revisión del test ECE
-  const handleReviewECE = (userId) => {
-    navigate(`/psicologo/respuestas?test_id=5&user_id=${userId}`);
-  };
 
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -90,57 +74,48 @@ export default function psicologoDashboard() {
         </div>
       </header>
 
-      {/* Contenido principal */}
       <Container className="mt-5 flex-grow-1">
         <h1 className="mb-4 text-center">Dashboard Psicólogo</h1>
-        <h4 className="mb-4">Usuarios Registrados</h4>
-        {isLoading ? (
-          <div className="d-flex justify-content-center">
-            <Spinner animation="border" />
-          </div>
-        ) : errorMessage ? (
-          <Alert variant="danger">{errorMessage}</Alert>
-        ) : (
-          <Table striped bordered hover responsive className="table-sm">
-            <thead>
-              <tr>
-                <th>RUT</th>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Sector</th>
-                <th>Cargo</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => {
-                const canReviewECE = hasECEAssigned(user.id);
-                return (
-                  <tr key={user.id}>
-                    <td>{user.rut}</td>
-                    <td>{user.nombre}</td>
-                    <td>{user.email || "No disponible"}</td>
-                    <td>{user.sector}</td>
-                    <td>{user.cargo}</td>
-                    <td>
-                      {canReviewECE ? (
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          onClick={() => handleReviewECE(user.id)}
-                        >
-                          Revisar ECE
-                        </Button>
-                      ) : (
-                        <span style={{ color: "#999" }}>Sin ECE asignado</span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
+
+        {error && (
+          <Alert variant="danger" className="mb-4">
+            {error}. Por favor, verifica tu conexión e intenta nuevamente.
+          </Alert>
         )}
+
+        <Row className="mb-4">
+          <Col md={6}>
+            <Card>
+              <Card.Body>
+                <Card.Title>Usuarios Registrados</Card.Title>
+                <Card.Text>
+                  {loading.users
+                    ? "Cargando..."
+                    : `Total de usuarios: ${userCount}`}
+                </Card.Text>
+                <Button as={Link} to="/psicologo/users" variant="primary">
+                  Ver Usuarios
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+
+          <Col md={6}>
+            <Card>
+              <Card.Body>
+                <Card.Title>Tests Asignados</Card.Title>
+                <Card.Text>
+                  {loading.tests
+                    ? "Cargando..."
+                    : `Tests asignados: ${assignedTestsCount}`}
+                </Card.Text>
+                <Button as={Link} to="/psicologo/asignaciones" variant="primary">
+                  Ver Tests Asignados
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
       </Container>
 
       {/* Footer */}
@@ -187,4 +162,6 @@ export default function psicologoDashboard() {
       `}</style>
     </div>
   );
-}
+};
+
+export default PsicologoDashboard;
