@@ -8,6 +8,31 @@ const { generateResponse } = require("../../utils/utils");
  * Lista las respuestas abiertas del test ECE para un evaluado.
  * Solo accesible para usuarios con rol 'psicologo'.
  */
+/**
+ * Endpoint: GET /ece/assigned-tests/count
+ * Cuenta todas las asignaciones del test ECE para todos los usuarios.
+ * Se asume que en la tabla tests el test ECE se identifica por test_name = 'ECE'.
+ */
+module.exports.countECEAssignments = async (event) => {
+  try {
+    const testName = "ECE";
+
+    return await queryWithTransaction(async (connection) => {
+      const query = `
+        SELECT COUNT(*) as count
+        FROM assigned_tests at
+        JOIN tests t ON at.test_id = t.id
+        WHERE t.test_name = ?
+      `;
+      const [rows] = await connection.execute(query, [testName]);
+      return generateResponse(200, { count: rows[0].count });
+    });
+  } catch (error) {
+    console.error("Error counting ECE assignments:", error);
+    return generateResponse(500, { message: "Internal Server Error" });
+  }
+};
+
 module.exports.listECEResponses = async (event) => {
   try {
     // Extraemos parámetros de la query string

@@ -225,6 +225,14 @@ functions:
       - httpApi:
           path: /ece/evaluar
           method: post
+          
+  eceCountAssignments:
+    handler: src/maintainers/psicologo/psicologoHandler.countECEAssignments
+    events:
+      - httpApi:
+          path: /ece/assigned-tests/count
+          method: get        
+          
 
 ##############################
     #Asignar tests
