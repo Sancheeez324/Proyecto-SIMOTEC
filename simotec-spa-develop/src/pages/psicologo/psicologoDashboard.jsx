@@ -6,15 +6,11 @@ import logoEcos from "../../fotos/Icon2SinFondo.png";
 
 const PsicologoDashboard = () => {
   const [assignedTestsCount, setAssignedTestsCount] = useState(0);
-  const [userCount, setUserCount] = useState(0);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState({
-    users: true,
-    tests: true,
-  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Ejemplo: cargar conteo de usuarios y de tests asignados
+    // Se carga el conteo de usuarios con test ECE asignado
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -22,23 +18,8 @@ const PsicologoDashboard = () => {
           throw new Error("No se encontró token de autenticación");
         }
 
-        // 1) Cargar número de usuarios (puede ser el mismo endpoint o uno diferente)
-        const usersRes = await fetch(
-          `${import.meta.env.VITE_API_URL}/users/all`, 
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (!usersRes.ok) {
-          throw new Error("Error al cargar conteo de usuarios");
-        }
-        const usersData = await usersRes.json();
-        setUserCount(usersData.count);
-        
-        // 2) Cargar conteo de tests asignados
+        // Se asume que el endpoint /assigned-tests/count retorna el número
+        // de usuarios únicos con el test ECE asignado.
         const testsRes = await fetch(
           `${import.meta.env.VITE_API_URL}/assigned-tests/count`,
           {
@@ -53,12 +34,11 @@ const PsicologoDashboard = () => {
         }
         const testsData = await testsRes.json();
         setAssignedTestsCount(testsData.count);
-
       } catch (err) {
         console.error("Error detallado:", err);
         setError(err.message || "Error desconocido al obtener datos");
       } finally {
-        setLoading({ users: false, tests: false });
+        setLoading(false);
       }
     };
 
@@ -74,6 +54,7 @@ const PsicologoDashboard = () => {
         </div>
       </header>
 
+      {/* Contenido Principal */}
       <Container className="mt-5 flex-grow-1">
         <h1 className="mb-4 text-center">Dashboard Psicólogo</h1>
 
@@ -83,34 +64,18 @@ const PsicologoDashboard = () => {
           </Alert>
         )}
 
-        <Row className="mb-4">
+        <Row className="mb-4 justify-content-center">
           <Col md={6}>
             <Card>
               <Card.Body>
-                <Card.Title>Usuarios Registrados</Card.Title>
+                <Card.Title>Usuarios con test ECE asignado</Card.Title>
                 <Card.Text>
-                  {loading.users
+                  {loading
                     ? "Cargando..."
-                    : `Total de usuarios: ${userCount}`}
+                    : `Total de usuarios: ${assignedTestsCount}`}
                 </Card.Text>
                 <Button as={Link} to="/psicologo/users" variant="primary">
                   Ver Usuarios
-                </Button>
-              </Card.Body>
-            </Card>
-          </Col>
-
-          <Col md={6}>
-            <Card>
-              <Card.Body>
-                <Card.Title>Tests Asignados</Card.Title>
-                <Card.Text>
-                  {loading.tests
-                    ? "Cargando..."
-                    : `Tests asignados: ${assignedTestsCount}`}
-                </Card.Text>
-                <Button as={Link} to="/psicologo/asignaciones" variant="primary">
-                  Ver Tests Asignados
                 </Button>
               </Card.Body>
             </Card>

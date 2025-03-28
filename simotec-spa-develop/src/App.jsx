@@ -25,8 +25,9 @@ const SuperAdminHome = lazy(() => import("./pages/super_admin/SuperAdminHome.jsx
 // Ruta de usuario
 const UserHome = lazy(() => import("./pages/user/UserHome.jsx"));
 
-// Importación para el flujo de Psicólogo
+// Importaciones para el flujo de Psicólogo
 const PsicologoDashboard = lazy(() => import("./pages/psicologo/psicologoDashboard.jsx"));
+const PsicologoUserList = lazy(() => import("./pages/psicologo/psicologoUserList.jsx"));
 
 const ProtectedRoute = ({ element, requiredRole }) => {
   const { isAuthenticated, hasRole } = useAuth();
@@ -88,9 +89,12 @@ function App() {
               <ProtectedRoute element={<SuperAdminHome />} requiredRole="super_admin" />
             } />
 
-            {/* Nueva ruta para psicólogo */}
+            {/* Rutas de psicólogo */}
             <Route path="/psicologo/dashboard" element={
               <ProtectedRoute element={<PsicologoDashboard />} requiredRole="psicologo" />
+            } />
+            <Route path="/psicologo/users" element={
+              <ProtectedRoute element={<PsicologoUserList />} requiredRole="psicologo" />
             } />
           </Routes>
         </Suspense>
