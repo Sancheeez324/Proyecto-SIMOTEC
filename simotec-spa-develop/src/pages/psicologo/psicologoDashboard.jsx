@@ -21,14 +21,14 @@ const PsicologoDashboard = () => {
         // Se asume que el endpoint /assigned-tests/count retorna el número
         // de usuarios únicos con el test ECE asignado.
         const testsRes = await fetch(
-          `${import.meta.env.VITE_API_URL}/assigned-tests/count`,
+          `${import.meta.env.VITE_API_URL}/ece/assigned-tests/count`,
           {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
           }
-        );
+        );        
         if (!testsRes.ok) {
           throw new Error("Error al cargar conteo de tests asignados");
         }
