@@ -163,6 +163,13 @@ functions:
           path: /assigned-tests/auth-user/{auth_user_id}  # Ruta clara
           method: get        
 
+  getAssignedTestById:
+    handler: src/maintainers/users-tests/handler.getAssignedTestById
+    events:
+      - httpApi:
+          path: /assigned-tests/{assigned_test_id}
+          method: get
+
   # 2. Obtener preguntas de un test
   getTestQuestions:
     handler: src/maintainers/users-tests/handler.getTestQuestions
@@ -216,7 +223,7 @@ eceSubmitManualEvaluation:
         method: post
 
           
-    #TESTS
+    #Asignar tests
 ##############################
   getTests:
     handler: src/maintainers/tests/handler.getTests

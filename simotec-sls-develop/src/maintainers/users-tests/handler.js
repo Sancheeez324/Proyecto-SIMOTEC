@@ -148,3 +148,110 @@ module.exports.submitTest = async (event) => {
         });
     }
 };
+
+//Obtener todos los tests por id
+module.exports.getAssignedTestById = async (event) => {
+    try {
+        return await queryWithTransaction(async (connection) => {
+            const assigned_test_id = event.pathParameters.assigned_test_id;
+            
+            // Obtener el test asignado directamente por su ID
+            const [[test]] = await connection.query(
+                `SELECT 
+                    at.id as assigned_test_id,
+                    at.user_id,
+                    at.status,
+                    at.start_time,
+                    at.duration_minutes,
+                    at.score,
+                    t.id as test_id,
+                    t.test_name,
+                    t.description,
+                    t.passing_score,
+                    t.sector,
+                    t.tipo
+                 FROM assigned_tests at
+                 JOIN tests t ON at.test_id = t.id
+                 WHERE at.id = ?`,
+                [assigned_test_id]
+            );
+
+            if (!test) {
+                return generateResponse(404, { message: "Test asignado no encontrado" });
+            }
+
+            return generateResponse(200, test);
+        });
+    } catch (error) {
+        console.error("Error en getAssignedTestById:", error);
+        return generateResponse(500, { 
+            message: "Error interno del servidor",
+            error: error.message 
+        });
+    }
+};
+
+
+// Obtener las preguntas de los tests
+// 3. Obtener preguntas de un test
+module.exports.getTestQuestions = async (event) => {
+    try {
+        return await queryWithTransaction(async (connection) => {
+            const { test_id } = event.pathParameters;
+            const auth_user_id = event.queryStringParameters?.auth_user_id; // Obtener de query params
+
+            if (!auth_user_id) {
+                return generateResponse(400, { message: "Se requiere auth_user_id como query parameter" });
+            }
+            // Verificar que el test está asignado al usuario
+            const user_id = await getUserIdFromAuth(connection, auth_user_id);
+            const [[assignment]] = await connection.query(
+                `SELECT at.id 
+                 FROM assigned_tests at
+                 WHERE at.test_id = ? AND at.user_id = ? AND at.status IN ('pendiente', 'reiniciado')`,
+                [test_id, user_id]
+            );
+
+            if (!assignment) {
+                return generateResponse(403, { message: "Test no asignado o ya completado" });
+            }
+
+            // Obtener preguntas con sus opciones
+            const [questions] = await connection.query(
+                `SELECT 
+                    q.id,
+                    q.question_text,
+                    q.type,
+                    q.weight,
+                    q.category,
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'id', o.id,
+                            'option_text', o.option_text,
+                            'is_correct', o.is_correct
+                        )
+                    ) as options
+                 FROM questions q
+                 LEFT JOIN options o ON q.id = o.question_id
+                 WHERE q.test_id = ?
+                 GROUP BY q.id
+                 ORDER BY q.id`,
+                [test_id]
+            );
+
+            // Formatear opciones correctamente
+            const formattedQuestions = questions.map(question => ({
+                ...question,
+                options: question.options || [] // Manejar casos donde options es null
+            }));
+
+            return generateResponse(200, formattedQuestions);
+        });
+    } catch (error) {
+        console.error("Error en getTestQuestions:", error);
+        return generateResponse(500, { 
+            message: "Error al obtener preguntas",
+            error: error.message 
+        });
+    }
+};
