@@ -30,7 +30,7 @@ const TakeTest = () => {
         const userData = JSON.parse(localStorage.getItem('user'));
 
         await sendRequest(
-          `${import.meta.env.VITE_API_URL}/user-tests/${testInfo.test_id}/save-progress`,
+          `${import.meta.env.VITE_API_URL}/users-tests/${testInfo.test_id}/save-progress`,
           'POST',
           {
             auth_user_id: userData.id,
@@ -82,7 +82,7 @@ const TakeTest = () => {
         setTimeLeft(testData.duration_minutes * 60);
 
         const questionsRes = await fetch(
-          `${import.meta.env.VITE_API_URL}/user-tests/${testData.test_id}/questions?auth_user_id=${auth_user_id}`,
+          `${import.meta.env.VITE_API_URL}/users-tests/${testData.test_id}/questions?auth_user_id=${auth_user_id}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -167,7 +167,7 @@ const TakeTest = () => {
       const userData = JSON.parse(localStorage.getItem('user'));
 
       const response = await sendRequest(
-        `${import.meta.env.VITE_API_URL}/user-tests/${testInfo.test_id}/submit`,
+        `${import.meta.env.VITE_API_URL}/users-tests/${testInfo.test_id}/submit`,
         'POST',
         {
           auth_user_id: userData.id,
