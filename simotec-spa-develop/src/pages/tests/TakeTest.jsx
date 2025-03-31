@@ -252,16 +252,16 @@ const TakeTest = () => {
 
       {esPSL ? (
   Object.entries(
-    questions.reduce((acc, question) => {
-      const sub = question.subdimension || 'Sin subdimensión';
-      acc[sub] = acc[sub] || [];
-      acc[sub].push(question);
+    questions.reduce((acc, pregunta) => {
+      const grupo = pregunta.subdimension || 'Sin subdimensión';
+      acc[grupo] = acc[grupo] || [];
+      acc[grupo].push(pregunta);
       return acc;
     }, {})
-  ).map(([subdimension, preguntas]) => (
-    <div key={subdimension} className="mb-5">
-      <h4 className="mb-3" style={{ borderBottom: '2px solid #ccc', paddingBottom: '5px' }}>{subdimension}</h4>
-      {preguntas.map(pregunta => (
+  ).map(([subdimension, preguntasGrupo]) => (
+    <div key={subdimension}>
+      <h4 className="mt-5 mb-3">{subdimension}</h4>
+      {preguntasGrupo.map((pregunta) => (
         <PreguntaLikert
           key={pregunta.id}
           pregunta={pregunta}
@@ -302,6 +302,7 @@ const TakeTest = () => {
     </Card>
   ))
 )}
+
 
 
       <div className="text-center mt-4">
