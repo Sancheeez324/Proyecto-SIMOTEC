@@ -294,13 +294,13 @@ module.exports.getAssignedTestById = async (event) => {
     }
 };
 // 3. Obtener preguntas de un test (versión corregida)
+// Reemplazo en getTestQuestions para test_id = 4 (PSL)
 module.exports.getTestQuestions = async (event) => {
     try {
         return await queryWithTransaction(async (connection) => {
             const { test_id } = event.pathParameters;
             const auth_user_id = event.queryStringParameters?.auth_user_id;
 
-            // Validaciones básicas
             if (!test_id || isNaN(test_id)) {
                 return generateResponse(400, { message: "ID de test inválido" });
             }
@@ -309,7 +309,6 @@ module.exports.getTestQuestions = async (event) => {
                 return generateResponse(400, { message: "Se requiere auth_user_id" });
             }
 
-            // Verificar que el test está asignado al usuario
             const user_id = await getUserIdFromAuth(connection, auth_user_id);
             const [[assignment]] = await connection.query(
                 `SELECT id, selected_questions, answers, progress 
@@ -326,7 +325,6 @@ module.exports.getTestQuestions = async (event) => {
             let questions = [];
             let total_questions = 0;
 
-            // Función para parsear de forma segura el JSON
             const safeParseJSON = (jsonString) => {
                 try {
                     return jsonString ? JSON.parse(jsonString) : null;
@@ -336,23 +334,21 @@ module.exports.getTestQuestions = async (event) => {
                 }
             };
 
-            // Si ya hay preguntas seleccionadas, intentar usarlas
             const savedQuestions = safeParseJSON(assignment.selected_questions);
             if (savedQuestions && Array.isArray(savedQuestions)){
                 questionIds = savedQuestions;
-                
-                // Obtener el total de preguntas disponibles
+
                 const [[{ total }]] = await connection.query(
                     `SELECT COUNT(*) as total FROM questions WHERE test_id = ?`,
                     [test_id]
                 );
                 total_questions = total;
-                
-                // Obtener las preguntas guardadas
+
                 [questions] = await connection.query(
                     `SELECT 
                         q.id,
                         q.question_text,
+                        q.subdimension,
                         q.type,
                         q.weight,
                         q.sector,
@@ -372,29 +368,29 @@ module.exports.getTestQuestions = async (event) => {
                     [questionIds, questionIds]
                 );
             } else {
-                // Paso 1: Obtener el TOTAL de preguntas disponibles para este test
                 const [[{ total }]] = await connection.query(
                     `SELECT COUNT(*) as total FROM questions WHERE test_id = ?`,
                     [test_id]
                 );
                 total_questions = total;
 
-                // Paso 2: Seleccionar 20 IDs de preguntas aleatorias
-                const [randomQuestions] = await connection.query(
-                    `SELECT id FROM questions 
-                     WHERE test_id = ?
-                     ORDER BY RAND()
-                     LIMIT 20`,
-                    [test_id]
-                );
-
-                if (randomQuestions.length === 0) {
-                    return generateResponse(404, { message: "No hay preguntas disponibles para este test" });
+                if (parseInt(test_id) === 4) {
+                    const [allQuestions] = await connection.query(
+                        `SELECT id FROM questions WHERE test_id = ?`,
+                        [test_id]
+                    );
+                    questionIds = allQuestions.map(q => q.id);
+                } else {
+                    const [randomQuestions] = await connection.query(
+                        `SELECT id FROM questions 
+                         WHERE test_id = ?
+                         ORDER BY RAND()
+                         LIMIT 20`,
+                        [test_id]
+                    );
+                    questionIds = randomQuestions.map(q => q.id);
                 }
 
-                questionIds = randomQuestions.map(q => q.id);
-
-                // Guardar la selección en la base de datos como JSON válido
                 await connection.query(
                     `UPDATE assigned_tests 
                      SET selected_questions = ?, start_time = ?, progress = 0
@@ -402,11 +398,11 @@ module.exports.getTestQuestions = async (event) => {
                     [JSON.stringify(questionIds), getFechaChile(null, true), assignment.id]
                 );
 
-                // Paso 3: Obtener las preguntas seleccionadas con sus opciones
                 [questions] = await connection.query(
                     `SELECT 
                         q.id,
                         q.question_text,
+                        q.subdimension,
                         q.type,
                         q.weight,
                         q.sector,
@@ -427,7 +423,6 @@ module.exports.getTestQuestions = async (event) => {
                 );
             }
 
-            // Formatear respuesta
             const formattedQuestions = questions.map(q => ({
                 ...q,
                 options: q.options ? q.options.filter(opt => opt !== null) : [],
@@ -437,7 +432,6 @@ module.exports.getTestQuestions = async (event) => {
                 }
             }));
 
-            // Si hay respuestas guardadas, aplicarlas
             let savedAnswers = {};
             const parsedAnswers = safeParseJSON(assignment.answers);
             if (parsedAnswers && typeof parsedAnswers === 'object') {
