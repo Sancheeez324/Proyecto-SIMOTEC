@@ -35,7 +35,7 @@ const TakeTest = () => {
           setLoading(false);
           return;
         }
-        // Convertir el status a string (sin usar campos conflictivos)
+        // Convertir el status a string y normalizarlo
         const statusValue = (testData.status || '').toString().trim().toLowerCase();
         setTestInfo(testData);
         setTimeLeft((testData.duration_minutes || 0) * 60);
@@ -138,8 +138,9 @@ const TakeTest = () => {
   const handleSubmit = async () => {
     try {
       setLoading(true);
+      // Aquí se utiliza la ruta: /user-tests/{test_id}/submit (sin "s" extra)
       const resp = await sendRequest(
-        `${import.meta.env.VITE_API_URL}/users-tests/${testInfo.test_id}/submit`,
+        `${import.meta.env.VITE_API_URL}/user-tests/${testInfo.test_id}/submit`,
         'POST',
         {
           auth_user_id,
