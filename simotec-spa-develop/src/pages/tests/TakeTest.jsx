@@ -22,33 +22,41 @@ const TakeTest = () => {
   useEffect(() => {
     const fetchTestInfo = async () => {
       try {
-        // Obtener la información del test asignado
-        const testData = await sendRequest(
+        const response = await sendRequest(
           `${import.meta.env.VITE_API_URL}/assigned-tests/${assigned_test_id}`,
           'GET',
           null,
           { 'Authorization': `Bearer ${token}` }
         );
+        const testData = response.data;
+        console.log('Respuesta de testData:', testData);
+        if (!testData) {
+          setError('No se recibió información del test asignado.');
+          setLoading(false);
+          return;
+        }
+        // Convertir el status a string (sin usar campos conflictivos)
+        const statusValue = (testData.status || '').toString().trim().toLowerCase();
         setTestInfo(testData);
-        setTimeLeft(testData.duration_minutes * 60);
+        setTimeLeft((testData.duration_minutes || 0) * 60);
         
         let questionsData;
-        if (testData.status === 'pendiente') {
-          // Generar preguntas usando getTestQuestions
-          questionsData = await sendRequest(
+        if (statusValue === 'pendiente') {
+          const resp = await sendRequest(
             `${import.meta.env.VITE_API_URL}/user-tests/${testData.test_id}/questions?auth_user_id=${auth_user_id}`,
             'GET',
             null,
             { 'Authorization': `Bearer ${token}` }
           );
-        } else if (testData.status === 'en_progreso') {
-          // Recuperar preguntas ya generadas usando getSavedQuestions
-          questionsData = await sendRequest(
+          questionsData = resp.data;
+        } else if (statusValue === 'en_progreso') {
+          const resp = await sendRequest(
             `${import.meta.env.VITE_API_URL}/user-tests/${testData.test_id}/savedQuestions?auth_user_id=${auth_user_id}`,
             'GET',
             null,
             { 'Authorization': `Bearer ${token}` }
           );
+          questionsData = resp.data;
         } else {
           setError('El test ya fue completado o reiniciado.');
           setLoading(false);
@@ -59,6 +67,7 @@ const TakeTest = () => {
         setAnswers(questionsData.saved_answers || {});
         setProgress(questionsData.progress || 0);
       } catch (err) {
+        console.error('Error al cargar el test:', err);
         setError('Error al cargar el test.');
       } finally {
         setLoading(false);
@@ -68,7 +77,6 @@ const TakeTest = () => {
     fetchTestInfo();
   }, [assigned_test_id]);
   
-  // Actualizar progreso periódicamente con saveTestProgress (POST)
   useEffect(() => {
     const saveProgress = async () => {
       if (!testInfo) return;
@@ -94,7 +102,6 @@ const TakeTest = () => {
     return () => clearInterval(interval);
   }, [answers, testInfo, questions, assigned_test_id]);
   
-  // Temporizador del test
   useEffect(() => {
     if (!timeLeft) return;
     const timer = setInterval(() => {
@@ -131,7 +138,7 @@ const TakeTest = () => {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const response = await sendRequest(
+      const resp = await sendRequest(
         `${import.meta.env.VITE_API_URL}/users-tests/${testInfo.test_id}/submit`,
         'POST',
         {
@@ -143,8 +150,9 @@ const TakeTest = () => {
         },
         { 'Authorization': `Bearer ${token}` }
       );
-      navigate(`/test-result/${assigned_test_id}`, { state: response });
+      navigate(`/test-result/${assigned_test_id}`, { state: resp.data });
     } catch (err) {
+      console.error('Error al enviar respuestas:', err);
       setError('Error al enviar respuestas: ' + err.message);
     } finally {
       setLoading(false);

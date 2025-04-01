@@ -37,7 +37,7 @@ module.exports.getAssignedTests = async (event) => {
                     t.tipo
                  FROM assigned_tests at
                  JOIN tests t ON at.test_id = t.id 
-                 WHERE at.user_id = ? AND at.status IN ('pendiente', 'reiniciado')`,
+                 WHERE at.user_id = ? AND at.status IN ('pendiente', 'reiniciado', 'en_progreso')`,
                 [user_id]
             );
             

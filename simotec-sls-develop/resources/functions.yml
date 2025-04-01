@@ -184,6 +184,13 @@ functions:
           path: /user-tests/{test_id}/questions
           method: get
           
+  getSavedQuestions:
+    handler: src/maintainers/users-tests/questionHandler.getSavedQuestions
+    events:
+      - httpApi:
+          path: /user-tests/{test_id}/savedQuestions
+          method: get
+
   # 3. Enviar respuestas de un test
   submitTest:
     handler: src/maintainers/users-tests/questionHandler.submitTest
